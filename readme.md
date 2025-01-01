@@ -1,4 +1,4 @@
-
+Visualizaciones de datos sobre el conflicto Israel/Palestina
 
 ## Fuentes
 - Palestine Datasets: https://data.techforpalestine.org/docs/killed-in-gaza/
