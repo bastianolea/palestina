@@ -1,57 +1,29 @@
-library(readr)
-library(dplyr)
+# víctimas por edad ----
 
-gaza <- read_csv("killed-in-gaza.csv")
+gaza_victimas |> 
+  ggplot(aes(edad)) +
+  geom_density()
 
-gaza
+gaza_victimas |> 
+  ggplot(aes(edad,
+             fill = sexo)) +
+  geom_density()
 
+# víctimas acumuladas ----
+muertes_totales <- muertes |> 
+  group_by(fecha) |> 
+  summarize(muertos = sum(muertos),
+            heridos = sum(heridos)) |> 
+  mutate(totales = cumsum(muertos)) |> 
+  mutate(alto_prop = if_else(muertos > quantile(muertos, 0.8), "alto", "común"),
+         alto_rel = if_else(muertos > 100, "alto", "común"))
 
-gaza <- read_csv("casualties_daily.csv") |> 
-  select(-ends_with("cum"))
-
-gaza |> glimpse()
-
-library(ggplot2)
-
-
-
-install.packages("ggbeeswarm")
-library(ggbeeswarm)
-
-
-gaza |> 
+muertes_totales |> 
   ggplot() +
-  aes(killed, report_date) +
-  geom_beeswarm(cex = 2)
-
-
-library(tidyr)
-gaza_unc <- gaza |> 
-  filter(!is.na(killed)) |> 
-  uncount(weights = killed)
-  
-
-gaza_unc |> 
-  slice(1:10000) |> 
-  ggplot() +
-  aes(1, report_date) +
-  geom_quasirandom(size = 0.1, bandwidth = 0.3)
-
-gaza_unc |> 
-  slice(1:10000) |> 
-  ggplot() +
-  aes(1, report_date) +
-  geom_beeswarm(size = 0.1)
-
-
-gaza_unc |> 
-  # slice(1:20000) |> 
-  ggplot() +
-  aes(1, report_date) +
-  geom_violin(trim = F, adjust = .4) +
-  # scale_y_date(date_breaks = "months", date_labels = "%m/%Y",
-               # )
-  # scale_y_date(date_breaks = "months") +
-  scale_y_continuous(n.breaks = 5) +
-  coord_cartesian(ylim = c(max(gaza_unc$report_date), min(gaza_unc$report_date)),
-                  expand = TRUE)
+  aes(fecha, totales) +
+  geom_area() +
+  geom_segment(data = ~filter(.x, muertos >= 100),
+                             aes(xend = fecha, yend = 0),
+               color = "red") +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_date(expand = expansion(c(0.1, 0)))

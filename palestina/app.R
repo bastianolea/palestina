@@ -62,7 +62,7 @@ ui <- page_fluid(
     HTML("h2 {font-size: 150%;}")),
   
   tags$style(
-    HTML("h3 {font-size: 140%;}")),
+    HTML("h3 {font-size: 140%; margin-bottom: 10px;}")),
   
   # color de enlaces
   tags$style(
@@ -87,7 +87,7 @@ ui <- page_fluid(
       
       cuadro(
         # h1(style = css(background_color = color$fondo, max_width = "200px"), 
-        bloque(
+        bloque(ancho = "170px",
            h1("Palestina")
            ),
         p("Prueba de texto")
@@ -105,10 +105,10 @@ ui <- page_fluid(
       
       
       cuadro(
-        bloque(h3("Otro texto"), ancho = "160px"),
+        bloque(h3("Otro subtítulo"), ancho = "190px"),
         p("Prueba de texto"),
         
-        bloque(h3("Otro texto"), ancho = "160px"),
+        bloque(h3("Otro subtítulo"), ancho = "190px"),
         p("Prueba de texto", span("con énfasis", style = css(background_color = color$detalle))),
         
       ),
@@ -119,7 +119,9 @@ ui <- page_fluid(
           bloque(h4("Fuentes:"), ancho = "110px"),
           div(style = css(height = "8px")),
           markdown("- Palestine Datasets: https://data.techforpalestine.org/docs/killed-in-gaza/
-- Armed Conflict Location & Event Data (ACLED): https://acleddata.com/israel-palestine/"),
+                    - Armed Conflict Location & Event Data (ACLED): https://acleddata.com/israel-palestine/"),
+          # markdown("- [redacted]
+          #           - [redacted]"),
           
           br(),
           
