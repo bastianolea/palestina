@@ -10,6 +10,8 @@ color <- list(fondo = "#151515",
               principal = "#666666"
 )
 
+tipografia <- list(titulos = "JetBrains Mono",
+                   cuerpo = "Space Grotesk")
 
 # funciones ----
 
@@ -43,13 +45,16 @@ ui <- page_fluid(
   
   # tema ----
   theme = bslib::bs_theme(fg = color$texto, bg = color$fondo,
-                          heading_font = font_google("JetBrains Mono"),
-                          base_font = font_google("Space Grotesk"),
+                          primary = color$principal,
+                          heading_font = font_google(tipografia$titulos),
+                          base_font = font_google(tipografia$cuerpo),
   ),
+  
+  # estilos ----
   
   # fondo negro de titulares
   # tags$style(
-    # HTML("h1, h2 {background-color:", color$fondo, ";}")),
+  # HTML("h1, h2 {background-color:", color$fondo, ";}")),
   
   # subrayado de titulares
   tags$style(
@@ -68,8 +73,46 @@ ui <- page_fluid(
   tags$style(
     HTML("a {color:", color$principal, ";}")),
   
+  # sliders
+  tags$style(
+    HTML(".irs-min, .irs-max, .irs-single {
+         border-radius: 0px !important; padding: 4px !important;
+         top: 2px !important;
+         background-color:", color$fondo, "!important}
+     .irs-grid-text {
+         bottom: 1px !important;
+         background-color:", color$fondo, "!important}
+     .irs-handle {
+        border-radius: 0px !important; 
+         width: 19px !important; height: 19px !important;
+         border: 2px solid", color$borde, "!important;
+         background-color:", color$fondo, "!important;
+         margin-top: 2px !important;}
+     .irs-handle:hover {
+         background-color:", color$borde, "!important;}
+     .irs-line, .irs-bar {
+         background-color:", color$borde, "!important;
+         height: 2px !important;}
+     .control-label {
+         font-family:", tipografia$titulos, "!important;}")
+  ),
   
-  ## fondo ----
+  
+  # botones
+  tags$style(
+    HTML(".action-button {
+    border: 2px solid", color$borde, "!important;
+    border-radius: 0 !important;
+    color:", color$texto, "!important;
+    font-size: 100% !important;
+    background-color:", color$fondo, "!important;
+    }
+    .action-button:hover {
+         background-color:", color$borde, "!important;
+         color:", color$fondo, "!important;")),
+  
+  
+  # fondo
   tags$style(
     HTML("body {
                 background:", color$fondo, ";
@@ -88,8 +131,8 @@ ui <- page_fluid(
       cuadro(
         # h1(style = css(background_color = color$fondo, max_width = "200px"), 
         bloque(ancho = "170px",
-           h1("Palestina")
-           ),
+               h1("Palestina")
+        ),
         p("Prueba de texto")
       ),
       
@@ -98,7 +141,7 @@ ui <- page_fluid(
       # contenido ----
       cuadro(
         subtitulo(ancho = "160px",
-          h2("Subtítulo")
+                  h2("Subtítulo")
         ),
         p("Prueba de texto")
       ),
@@ -108,9 +151,15 @@ ui <- page_fluid(
         bloque(h3("Otro subtítulo"), ancho = "190px"),
         p("Prueba de texto"),
         
+        sliderInput("slider", 
+                    "Slider", 
+                    min = 1, max = 10, value = 5),
+        
         bloque(h3("Otro subtítulo"), ancho = "190px"),
         p("Prueba de texto", span("con énfasis", style = css(background_color = color$detalle))),
         
+        actionButton("boton",
+                     "Botón")
       ),
       
       # firma ----
