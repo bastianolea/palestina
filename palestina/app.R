@@ -1,6 +1,7 @@
 library(shiny)
 library(bslib)
 library(htmltools)
+library(shinyWidgets)
 
 # colores ----
 color <- list(fondo = "#151515",
@@ -67,11 +68,21 @@ ui <- page_fluid(
     HTML("h2 {font-size: 150%;}")),
   
   tags$style(
-    HTML("h3 {font-size: 140%; margin-bottom: 10px;}")),
+    HTML("h3 {font-size: 140%; margin-bottom: 18px;}")),
   
   # color de enlaces
   tags$style(
     HTML("a {color:", color$principal, ";}")),
+  
+  # separador
+  tags$style(
+    HTML("hr {
+    margin: 1.5rem 0;
+    color: inherit;
+    border: 0;
+    border-top: 2px dashed", color$borde, ";
+    opacity: 1;
+  }")),
   
   # sliders
   tags$style(
@@ -82,37 +93,56 @@ ui <- page_fluid(
      .irs-grid-text {
          bottom: 1px !important;
          background-color:", color$fondo, "!important}
+     .irs-grid-pol {width: 2px !important; opacity: 1 !important;} /* ticks */
      .irs-handle {
-        border-radius: 0px !important; 
+         border-radius: 0px !important; 
          width: 19px !important; height: 19px !important;
          border: 2px solid", color$borde, "!important;
          background-color:", color$fondo, "!important;
-         margin-top: 2px !important;}
+         margin-top: 0.5px !important;}
      .irs-handle:hover {
          background-color:", color$borde, "!important;}
-     .irs-line, .irs-bar {
+     .irs-line {
          background-color:", color$borde, "!important;
-         height: 2px !important;}
+         height: 2px !important;
+         opacity: 1 !important;}
+     .irs-bar {display: none !important;} /* barra izq eleccionada */
      .control-label {
          font-family:", tipografia$titulos, "!important;}")
   ),
   
+  # botones radio
+  tags$style(
+    HTML(".radiobtn {
+          border: 2px solid", color$borde, "!important;
+          border-radius: 0 !important;
+          color:", color$texto, "!important;
+          font-size: 100% !important;
+          background-color:", color$fondo, "!important;}
+     .radiobtn:hover { /* hover */
+          background-color:", color$borde, "!important;
+          color:", color$fondo, "!important;}
+     .btn-check:checked+.btn { /* botón activo */
+          background-color:", color$borde, "!important;
+          color:", color$fondo, "!important;
+          }")),
   
   # botones
   tags$style(
     HTML(".action-button {
-    border: 2px solid", color$borde, "!important;
-    border-radius: 0 !important;
-    color:", color$texto, "!important;
-    font-size: 100% !important;
-    background-color:", color$fondo, "!important;
-    }
+          border: 2px solid", color$borde, "!important;
+          border-radius: 0 !important;
+          color:", color$texto, "!important;
+          font-size: 100% !important;
+          background-color:", color$fondo, "!important;
+          }
     .action-button:hover {
-         background-color:", color$borde, "!important;
-         color:", color$fondo, "!important;")),
+          background-color:", color$borde, "!important;
+          color:", color$fondo, "!important;
+          }")),
   
   
-  # fondo
+  # fondo de cuadrícula
   tags$style(
     HTML("body {
                 background:", color$fondo, ";
@@ -122,7 +152,7 @@ ui <- page_fluid(
   
   
   # ancho máximo de la app
-  div(style = css(max_width = "1000px", margin = "auto"),
+  div(style = css(max_width = "800px", margin = "auto"),
       
       
       # header ----
@@ -143,12 +173,24 @@ ui <- page_fluid(
         subtitulo(ancho = "160px",
                   h2("Subtítulo")
         ),
-        p("Prueba de texto")
+        p("Prueba de texto"),
+        p("Otro párrafo"),
+        
+        hr(),
+        
+        radioGroupButtons(
+          inputId = "grupo",
+          label = "Label",
+          choices = c("A", 
+                      "B", "C", "D"),
+          selected = "B"
+        )
       ),
       
       
       cuadro(
         bloque(h3("Otro subtítulo"), ancho = "190px"),
+        
         p("Prueba de texto"),
         
         sliderInput("slider", 
@@ -160,6 +202,16 @@ ui <- page_fluid(
         
         actionButton("boton",
                      "Botón")
+      ),
+      
+      cuadro(
+        bloque(h3("Víctimas"), ancho = "190px"),
+        
+        p("cada cruz representa a una víctima registrada"),
+        
+        div(
+          purrr::map(1:1000, ~span("x"))
+        )
       ),
       
       # firma ----
