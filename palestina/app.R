@@ -2,9 +2,29 @@ library(shiny)
 library(bslib)
 library(htmltools)
 library(shinyWidgets)
+
 library(readr)
 library(dplyr) |> suppressPackageStartupMessages()
 library(purrr)
+
+library(ggplot2)
+library(thematic)
+
+library(sysfonts)
+library(showtext)
+
+
+# datos ----
+
+victimas <- read_rds("pdatasets_victimas.rds")
+muertes <- read_rds("pdatasets_muertes.rds")
+eventos <- read_rds("acled_eventos.rds")
+
+nombres <- victimas |> filter(edad < 18) |> pull(nombre) |> sample(300)
+
+total_victimas <- nrow(victimas)
+
+
 
 # colores ----
 color <- list(fondo = "#151515",
@@ -14,8 +34,25 @@ color <- list(fondo = "#151515",
               principal = "#666666"
 )
 
+thematic_shiny(font = "auto")
+
+# tipografías ----
 tipografia <- list(titulos = "JetBrains Mono",
                    cuerpo = "Space Grotesk")
+
+sysfonts::font_add("JetBrains Mono",
+                   regular = "www/fonts/jetbrains-mono-v20-latin-regular.ttf",
+                   italic = "www/fonts/jetbrains-mono-v20-latin-italic.ttf",
+                   bold = "www/fonts/jetbrains-mono-v20-latin-500.ttf",
+                   bolditalic = "www/fonts/jetbrains-mono-v20-latin-500italic.ttf",
+)
+sysfonts::font_add("Space Grotesk",
+                   regular = "www/fonts/space-grotesk-v16-latin-regular.ttf",
+                   bold = "www/fonts/space-grotesk-v16-latin-600.ttf",
+                   # italic = "www/fonts/libre-baskerville-v14-latin-italic.ttf",
+                   # bolditalic = "www/fonts/libre-baskerville-v14-latin-italic.ttf",
+)
+
 
 # funciones ----
 
@@ -45,18 +82,10 @@ bloque <- function(..., ancho = "200px") {
 }
 
 
-# datos ----
-
-victimas <- read_rds("pdatasets_victimas.rds")
-muertes <- read_rds("pdatasets_muertes.rds")
-
-nombres <- victimas |> filter(edad < 18) |> pull(nombre) |> sample(300)
-
-total_victimas <- nrow(victimas)
 
 
 # opciones ----
-
+showtext::showtext_opts(dpi = 180)
 alto_cuadros_victimas = 700
 
 # ui ----
@@ -65,9 +94,21 @@ ui <- page_fluid(
   
   ## tema ----
   theme = bslib::bs_theme(fg = color$texto, bg = color$fondo,
-                          primary = color$principal,
-                          heading_font = font_google(tipografia$titulos),
-                          base_font = font_google(tipografia$cuerpo),
+                          primary = color$principal
+  ),
+  
+  ## tipografías ----
+  
+  # tipografía de cuerpo
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "css/space-grotesk.css"),
+    tags$style("* {font-family:'Space Grotesk' !important;}")
+  ),
+  
+  # tipografía de títulos
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "css/jetbrains-mono.css"),
+    tags$style("h1, h2, h3, h4, h5, h6, label, item {font-family:'JetBrains Mono' !important;}")
   ),
   
   ## estilos ----

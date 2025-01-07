@@ -1,12 +1,12 @@
 library(sf)
 
-data_coord <- data_2 |> 
-  st_as_sf(coords = c("longitude", "latitude")) |> 
-  st_set_crs("WGS84")
-
-data_coord |> 
-  ggplot() +
-  geom_sf()
+# data_coord <- data_2 |> 
+#   st_as_sf(coords = c("longitude", "latitude")) |> 
+#   st_set_crs("WGS84")
+# 
+# data_coord |> 
+#   ggplot() +
+#   geom_sf()
 
 library(rnaturalearth)
 
@@ -23,3 +23,7 @@ mapa_b <- mapa |>
   # recortar mapa
   st_crop(xmin = 32, xmax = 37,
           ymin = 35, ymax = 28)
+
+
+readr::write_rds(mapa_b,
+                 "palestina/mapa_palestina.rds", compress = "none")
