@@ -2,9 +2,6 @@ library(shiny)
 library(bslib)
 library(htmltools)
 library(shinyWidgets)
-library(readr)
-library(dplyr) |> suppressPackageStartupMessages()
-library(purrr)
 
 # colores ----
 color <- list(fondo = "#151515",
@@ -45,32 +42,16 @@ bloque <- function(..., ancho = "200px") {
 }
 
 
-# datos ----
-
-victimas <- read_rds("pdatasets_victimas.rds")
-muertes <- read_rds("pdatasets_muertes.rds")
-
-nombres <- victimas |> filter(edad < 18) |> pull(nombre) |> sample(300)
-
-total_victimas <- nrow(victimas)
-
-
-# opciones ----
-
-alto_cuadros_victimas = 700
-
-# ui ----
-
 ui <- page_fluid(
   
-  ## tema ----
+  # tema ----
   theme = bslib::bs_theme(fg = color$texto, bg = color$fondo,
                           primary = color$principal,
                           heading_font = font_google(tipografia$titulos),
                           base_font = font_google(tipografia$cuerpo),
   ),
   
-  ## estilos ----
+  # estilos ----
   
   # fondo negro de titulares
   # tags$style(
@@ -187,7 +168,7 @@ ui <- page_fluid(
   div(style = css(max_width = "800px", margin = "auto"),
       
       
-      ## header ----
+      # header ----
       div(style = css(height = "20px")),
       
       cuadro(
@@ -240,83 +221,32 @@ ui <- page_fluid(
                      "Botón")
       ),
       
-      
-      # # cruces de víctimas animadas (son demasiadas)
-      # cuadro(
-      #   bloque(h3("Víctimas"), ancho = "190px"),
-      #   
-      #   p("cada cruz representa a una víctima registrada"),
-      #   
-      #   div(style = css(height = "400px", 
-      #                   overflow_y = "scroll"),
-      #       
-      #       # purrr::map(1:300, ~span("x")) # versión básica
-      #       purrr::map(1:nrow(victimas), ~{
-      #         # p("texto", .x), # para que sean líneas independientes
-      #         span("x",
-      #              # animación
-      #              style = paste0("opacity: 0; ",
-      #                             "animation: fade 2s ease forwards;", # controla duración de animación
-      #                             "animation-delay: ", .x*0.1, "s;") # controla velocidad de aparición
-      #         )
-      #       })
-      #   )
-      # ),
-      
-      ## víctimas ----
-    
-      # dos columnas
-      layout_columns(
+      cuadro(
+        bloque(h3("Víctimas"), ancho = "190px"),
         
-        ### cruces ----
-        cuadro(
-          bloque(h3("Cantidad total de víctimas"), ancho = "190px"),
-          
-          p("Cada cruz representa a una de las", 
-            format(total_victimas, big.mark = ".", decimal.mark = ","), 
-            "víctimas registradas."),
-          
-          p(em("Desplázate hacia abajo para comprender la gravedad de la cifra.")),
-          
-          div(style = css(height = paste0(alto_cuadros_victimas, "px"),
-                          margin_left = "4px",
-                          overflow_y = "scroll",
-                          overflow_x = "hidden"),
-              
-              # cantidad total, en texto
-              rep("x", total_victimas) |>
-                paste(collapse = " ")
-          )
-        ),
+        p("cada cruz representa a una víctima registrada"),
         
-        
-        
-        ### nombres ----
-        # palabras que aparecen una tras otra
-        cuadro(
-          bloque(h3("Víctimas menores de edad"), ancho = "230px"),
-          
-          p(em("Cada nombre corresponde a una víctima confirmada de la guerra con menos de 18 años a la fecha de su muerte.")),
-          
-          p(em("Los nombres son elegidos al azar de entre las decenas de miles de víctimas registradas.")),
-          
-          
-          div(style = css(height = paste0(alto_cuadros_victimas, "px"), 
-                          overflow_y = "scroll"),
-              
-              # style = "column-count: 2;", # texto en múltiples columnas
-              purrr::map(1:length(nombres), ~{
-                # p("texto", .x), # para que sean líneas independientes
-                span(nombres[.x], " / ", # para texto con flujo continuado
-                     # animación
-                     style = paste0("opacity: 0; ",
-                                    "animation: fade 4s ease forwards;", # controla duración de animación
-                                    "animation-delay: ", .x*0.5, "s;") # controla velocidad de aparición
-                )
-              })
-          )
+        div(
+          purrr::map(1:300, ~span("x"))
         )
-      ), # fin columnas víctimas
+      ),
+      
+      cuadro(
+        # palabras que aparecen una tras otra
+        div(
+          style = "column-count: 2;", # texto en múltiples columnas
+          purrr::map(1:80, ~{
+            # p("texto", .x), # para que sean líneas independientes
+            span("texto", .x, " ", # para texto con flujo continuado
+              # animación
+              style = paste0("opacity: 0; 
+              margin-right: 12px;",
+              "animation: fade 4s ease forwards;", # controla duración de animación
+              "animation-delay: ", .x*0.2, "s;") # controla velocidad de aparición
+            )
+          })
+        )
+      ),
       
       
       

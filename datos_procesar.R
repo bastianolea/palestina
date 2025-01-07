@@ -2,9 +2,7 @@
 
 library(readr)
 library(dplyr)
-library(ggplot2)
 library(lubridate)
-
 
 
 ## nombres víctimas ----
@@ -20,12 +18,22 @@ victimas <- victimas_0 |>
                       # c(0, 18, 30, 40, 50, 60, Inf),
                       c(0, 10, 20, 30, 40, 50, 60, Inf),
                       right = FALSE)) |> 
+  mutate(edad_c = case_match(edad_c,
+                             "[0,10)" ~ "0 a 10 años",
+                             "[10,20)" ~ "10 a 19 años",
+                             "[20,30)" ~ "20 a 29 años",
+                             "[30,40)" ~ "30 a 39 años",
+                             "[40,50)" ~ "40 a 49 años",
+                             "[50,60)" ~ "50 a 59 años",
+                             "[60,Inf)" ~ "60 o más")) |> 
   mutate(sexo = case_match(sexo,
                            "m" ~ "Masculino", 
-                           "f" ~ "Femenino"))
+                           "f" ~ "Femenino")) |> 
+  select(-id, -name, -dob)
 
-victimas |> 
-  count(edad_c)
+
+# guardar
+readr::write_rds(victimas, "palestina/pdatasets_victimas.rds", compress = "none")
 
 
 ## diarios gaza ----
@@ -44,6 +52,7 @@ gaza_diarios <- gaza_diarios_0 |>
          pais = "Palestina")
 
 gaza_diarios |> glimpse()
+
 
 ## diarios cisjordania ----
 cisjordan_diarios_0 <- read_csv("datos/palestine-datasets/west_bank_daily.csv") 
@@ -72,8 +81,8 @@ muertes <- bind_rows(gaza_diarios,
 
 muertes
 
-
-
+# guardar
+readr::write_rds(muertes, "palestina/pdatasets_muertes.rds", compress = "none")
 
 # acled ----
 # https://acleddata.com/israel-palestine/
@@ -102,27 +111,5 @@ eventos <- eventos_0 |>
          pais = country, 
          everything())
 
-data_2 <- data |>
-  filter(event_date >= "2023-10-07") |>
-  filter(event_type != "Strategic developments")
-
-data |> glimpse()
-
-data |> 
-  count(disorder_type)
-
-data |> 
-  count(event_type)
-
-data |> 
-  filter(fatalities > 0) |> 
-  count(actor1) |> 
-  print(n=Inf)
-
-data |> 
-  filter(fatalities > 0) |> 
-  count(actor1, inter1) |> 
-  print(n=Inf)
-
-data |> 
-  count(admin1)
+# guardar
+readr::write_rds(eventos, "palestina/acled_eventos.rds", compress = "none")
