@@ -10,6 +10,7 @@ library(purrr) |> suppressPackageStartupMessages()
 library(lubridate) |> suppressPackageStartupMessages()
 
 library(ggplot2)
+library(sf)
 library(thematic)
 library(legendry)
 library(scales)
@@ -344,7 +345,7 @@ ui <- page_fluid(
           
           textOutput("texto_muertes_acumuladas", container = comando),
           
-          plotOutput("muertes_acumuladas") |> withSpinner(),
+          plotOutput("muertes_acumuladas", height = 300) |> withSpinner(),
           
           comando("> un gráfico acumulado representa un conteo aditivo, es decir, la cifra total de muertes acumulada día tras día."),  
         ),
@@ -362,7 +363,7 @@ ui <- page_fluid(
             choices = c("Asesinados", "Heridos")
           ),
           
-          plotOutput("muertes_totales_mes") |> withSpinner()
+          plotOutput("muertes_totales_mes", height = 300) |> withSpinner()
           
         )
         
