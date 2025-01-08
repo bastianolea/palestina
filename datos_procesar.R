@@ -97,10 +97,11 @@ readr::write_rds(muertes, "palestina/pdatasets_muertes.rds", compress = "none")
 # tiene coordenadas
 
 library(dplyr)
+library(sf)
 
 eventos_0 <- readr::read_csv("datos/acled/Israel_Palestine_Dec13.csv")
 
-eventos <- eventos_0 |> 
+eventos_1 <- eventos_0 |> 
   select(fecha = event_date,
          año = year,
          tipo_desorden = disorder_type,
@@ -109,7 +110,23 @@ eventos <- eventos_0 |>
          muertes = fatalities,
          region, 
          pais = country, 
-         everything())
+         longitude,
+         latitude)
+
+eventos_2 <- eventos_1 |>
+  sf::st_as_sf(coords = c("longitude", "latitude")) |>
+    sf::st_set_crs("WGS84")
+
+
+eventos_mes <- eventos_1 |> 
+  mutate(tipo_desorden = case_match(tipo_desorden,
+                                    "Political violence; Demonstrations" ~ "Demonstrations",
+                                    .default = tipo_desorden)) |> 
+  mutate(fecha = floor_date(fecha, "month", week_start = 1)) |>
+  group_by(año, fecha, tipo_desorden) |>
+  summarize(n = n(),
+            .groups = "drop")
 
 # guardar
-readr::write_rds(eventos, "palestina/acled_eventos.rds", compress = "none")
+readr::write_rds(eventos_2, "palestina/acled_eventos.rds", compress = "none")
+readr::write_rds(eventos_mes, "palestina/acled_eventos_mes.rds", compress = "none")

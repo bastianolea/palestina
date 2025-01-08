@@ -83,7 +83,9 @@ tema_palestina <- theme(text = element_text(family = "Space Grotesk", color = co
         plot.background =  element_rect(fill = color$fondo)) +
   # grilla
   theme(panel.grid = element_line(color = color$detalle,
-                                  linetype = "dotted"))
+                                  linetype = "dotted"),
+        panel.grid.major = element_line(linewidth = 0.7),
+        panel.grid.minor = element_line(linewidth = 0.4))
 
 
 # víctimas por edad ----
@@ -97,8 +99,6 @@ victimas |>
   tema_palestina
 
 
-
-
 # víctimas por edad y género ----
 victimas |> 
   ggplot() +
@@ -107,7 +107,8 @@ victimas |>
   scale_y_continuous(expand = expansion(c(0, 0.03))) +
   scale_x_continuous(expand = expansion(c(0, 0))) +
   theme(axis.text.y = element_blank()) +
-  labs(y = "proporción de víctimas\npor edad y género") +
+  labs(y = "proporción de víctimas\npor edad y género",
+       fill = "género", color = "género") +
   tema_palestina
 
 victimas_edad_sexo <- victimas |> 
@@ -174,6 +175,7 @@ muertes_totales_mes |>
   tema_palestina +
   theme(axis.text.x = element_text(margin = margin(t = 4)))
 
+
 # heridos por meses ----
 muertes_totales_mes |> 
   ggplot() +
@@ -212,6 +214,34 @@ eventos |>
 #   aes(fecha, muertes) +
 #   geom_point(aes(color = tipo_desorden), alpha = .4) +
 #   guides(color = guide_legend(position = "bottom", nrow = 2))
+
+
+
+# desorden ----
+eventos_semana <- eventos |> 
+  mutate(tipo_desorden = case_match(tipo_desorden,
+                                    "Political violence; Demonstrations" ~ "Demonstrations",
+                                    .default = tipo_desorden)) |> 
+  mutate(fecha = floor_date(fecha, "month", week_start = 1)) |> 
+  group_by(fecha, tipo_desorden) |> 
+  summarize(n = n())
+
+
+eventos_semana |>
+  # filter(fecha > "2022-01-01") |> 
+  ggplot() +
+  aes(fecha, n, color = tipo_desorden) +
+  geom_line(linewidth = 0.7, alpha = .8) +
+  scale_y_continuous(expand = c(0.01, 0)) +
+  scale_x_date(date_breaks = "years", date_labels = "%Y",
+               expand = c(0, 0)) +
+  tema_palestina +
+  guides(color = guide_legend(position = "inside")) +
+  theme(legend.position.inside = c(0.15, 0.8)) +
+  labs(y = "cantidad de eventos", x = NULL,
+       color = "Eventos")
+
+
 
 # densidad eventos ----
 eventos |> count(tipo_evento)
@@ -280,9 +310,9 @@ zoom_cisjordania <- list(coord_sf(xlim = c(34.65, 35.8),
                                   ylim = c(32.6, 31.3)))
 
 
-eventos_mapa <- eventos |> 
-  st_as_sf(coords = c("longitude", "latitude")) |> 
-    st_set_crs("WGS84")
+# eventos_mapa <- eventos |> 
+#   sf::st_as_sf(coords = c("longitude", "latitude")) |> 
+#     sf::st_set_crs("WGS84")
 
 ggplot() +
   annotate("rect", xmin = 32, xmax = 37,
