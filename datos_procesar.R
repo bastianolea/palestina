@@ -106,27 +106,62 @@ eventos_1 <- eventos_0 |>
          año = year,
          tipo_desorden = disorder_type,
          tipo_evento = event_type,
-         tipo_evento2 = sub_event_type,
+         tipo_subevento = sub_event_type,
          muertes = fatalities,
-         region, 
+         admin1,
          pais = country, 
          longitude,
          latitude)
 
-eventos_2 <- eventos_1 |>
+eventos_2 <- eventos_1 |> 
+  # zona
+  mutate(zona = case_when(admin1 == "Gaza Strip" ~ "Gaza",
+                          admin1 == "West Bank" ~ "Cisjordania",
+                          .default = "Otros")) |> 
+  # traducciones
+  mutate(tipo_desorden = case_match(tipo_desorden,
+                                    "Political violence; Demonstrations" ~ "Protestas",
+                                    "Demonstrations" ~ "Protestas",
+                                    "Political violence" ~ "Violencia política",
+                                    "Strategic developments" ~ "Sucesos estratégicos",
+                                    .default = tipo_desorden)) |> 
+  mutate(tipo_evento = case_match(tipo_evento,
+                                  "Battles" ~ "Enfrentamientos",
+                                  "Explosions/Remote violence" ~ "Violencia remota/explosivos",
+                                  "Protests" ~ "Protestas",
+                                  "Riots" ~ "Protestas violentas",
+                                  "Strategic developments" ~ "Acciones estratégicas",
+                                  "Violence against civilians" ~ "Violencia contra civiles",
+                                  .default = tipo_evento)) |> 
+  mutate(tipo_subevento = case_match(tipo_subevento,
+                                   "Mob violence" ~ "Violencia grupal",
+                                   "Peaceful protest" ~ "Protesta pacífica",
+                                   "Shelling/artillery/missile attack" ~ "Bombardeo/artillería/misiles",
+                                   "Air/drone strike" ~ "Ataque aéreo/drones",
+                                   "Armed clash" ~ "Enfrentamiento armado",
+                                   "Other" ~ "Otros",
+                                   "Looting/property destruction" ~ "Saqueos/destrucción de propiedad",
+                                   "Attack" ~ "Ataques",
+                                   "Violent demonstration" ~ "Protesta violenta",
+                                   "Disrupted weapons use" ~ "Denegación de uso de armas",
+                                   "Remote explosive/landmine/IED" ~ "Explosivo remoto/minas",
+                                   "Arrests" ~ "Detenciones",
+                                   .default = tipo_subevento))
+
+
+
+eventos_3 <- eventos_2 |>
   sf::st_as_sf(coords = c("longitude", "latitude")) |>
     sf::st_set_crs("WGS84")
 
 
-eventos_mes <- eventos_1 |> 
-  mutate(tipo_desorden = case_match(tipo_desorden,
-                                    "Political violence; Demonstrations" ~ "Demonstrations",
-                                    .default = tipo_desorden)) |> 
+eventos_mes <- eventos_2 |> 
   mutate(fecha = floor_date(fecha, "month", week_start = 1)) |>
-  group_by(año, fecha, tipo_desorden) |>
+  group_by(año, fecha, tipo_evento) |>
   summarize(n = n(),
+            muertes = sum(muertes),
             .groups = "drop")
 
 # guardar
-readr::write_rds(eventos_2, "palestina/acled_eventos.rds", compress = "none")
+readr::write_rds(eventos_3, "palestina/acled_eventos.rds", compress = "none")
 readr::write_rds(eventos_mes, "palestina/acled_eventos_mes.rds", compress = "none")

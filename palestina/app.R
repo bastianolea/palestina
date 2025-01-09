@@ -28,9 +28,26 @@ eventos_mes <- read_rds("acled_eventos_mes.rds")
 
 mapa <- read_rds("mapa_palestina.rds")
 
+# cifras
 nombres <- victimas |> filter(edad < 18) |> pull(nombre) |> sample(300)
-
 total_victimas <- sum(muertes$muertos)
+
+# listas
+lista_desorden <- unique(eventos$tipo_desorden)
+lista_evento <- unique(eventos$tipo_evento)
+# lista_subevento <- unique(eventos$tipo_subevento)[1:13]
+lista_subevento <- c("Violencia grupal",
+                     "Protesta pacífica",
+                     "Bombardeo/artillería/misiles",
+                     "Ataque aéreo/drones",
+                     "Enfrentamiento armado",
+                     "Saqueos/destrucción de propiedad",
+                     "Ataques",
+                     "Protesta violenta",
+                     "Denegación de uso de armas",
+                     "Explosivo remoto/minas",
+                     "Detenciones")
+
 
 
 
@@ -84,13 +101,14 @@ cuadro <- function(..., alto = NULL, flujo = "scroll") {
   }
 }
 
-cuadro_negro <- function(..., alto = NULL) {
+cuadro_negro <- function(..., alto = NULL, flujo = "scroll") {
   if (is.null(alto)) {
     div(style = css(margin = "8px", padding = "24px",
                     padding_bottom = "14px",
                     margin_bottom = "34px",
                     background_color = color$fondo,
                     opacity = "100%",
+                    overflow_y = flujo,
                     border = paste("2px solid", color$borde)),
         ...
     )
@@ -101,6 +119,7 @@ cuadro_negro <- function(..., alto = NULL) {
                     background_color = color$fondo,
                     opacity = "100%",
                     height = alto,
+                    overflow_y = flujo,
                     border = paste("2px solid", color$borde)),
         ...
     )
@@ -148,7 +167,7 @@ rango_años <- key_range_manual(
   name = c("2023", "2024", "2025")
 )
 
-# tema ggplot
+# tema ggplot ----
 tema_palestina <- theme(text = element_text(family = "Space Grotesk", color = color$texto)) +
   theme(axis.ticks = element_blank()) +
   # fondo
@@ -157,8 +176,10 @@ tema_palestina <- theme(text = element_text(family = "Space Grotesk", color = co
   # grilla
   theme(panel.grid = element_line(color = color$detalle,
                                   linetype = "dotted"),
-        panel.grid.major = element_line(linewidth = 0.7),
-        panel.grid.minor = element_line(linewidth = 0.4))
+        panel.grid.major = element_line(linewidth = 0.4),
+        panel.grid.minor = element_line(linewidth = 0.2)) +
+  # otros
+  theme(strip.text = element_text(size = 8))
 
 # opciones ----
 showtext::showtext_opts(dpi = 180)
@@ -223,6 +244,43 @@ ui <- page_fluid(
     opacity: 1;
   }")),
   
+  
+  # labels
+  tags$style(
+    HTML(".control-label {
+    margin-bottom: 0px !important;}")
+  ),
+  
+  # selectores
+  tags$style(
+    HTML(".selectize-input {
+    margin-top: 8px !important;
+         border: 2px solid", color$borde, "!important;
+          border-radius: 0 !important;
+         }")),
+  
+  # picker
+  tags$style(
+    HTML(".dropdown-toggle {
+    margin-top: 8px !important;
+         border: 2px solid", color$borde, "!important;
+          border-radius: 0 !important;
+          background-color:", color$fondo, "!important;
+          font-family:", tipografia$titulos, "!important;
+    }
+         .filter-option-inner-inner {
+         font-size: 90%;
+          font-family:", tipografia$titulos, "!important;
+         }")),
+  
+  # checkbox
+  tags$style(
+    HTML(".shiny-input-checkbox {
+    border: 2px solid", color$borde, "!important;
+          border-radius: 0 !important;
+          background-color:", color$fondo, "!important;
+    }")),
+  
   # sliders
   tags$style(
     HTML(".irs-min, .irs-max, .irs-single {
@@ -257,7 +315,12 @@ ui <- page_fluid(
           border: 2px solid", color$borde, "!important;
           border-radius: 0 !important;
           color:", color$texto, "!important;
-          font-size: 100% !important;
+          height: 36.5px !important;
+          padding-top: 6px !important;
+          padding-bottom: 6px !important;
+          padding-left: 18px !important;
+          padding-right: 18px !important;
+          font-size: 90% !important;
           background-color:", color$fondo, "!important;}
      .radiobtn:hover { /* hover */
           background-color:", color$borde, "!important;
@@ -339,9 +402,19 @@ ui <- page_fluid(
         cuadro_negro(
           bloque(h3("Muertes totales acumuladas"), ancho = "230px"),
           
-          sliderInput("muertes_acumuladas", 
-                      "Destacar masacres", 
-                      min = 0, max = 500, value = 100, step = 50),
+          
+          layout_columns(
+            sliderInput("muertes_acumuladas", 
+                        "Destacar masacres", 
+                        min = 0, max = 500, value = 100, step = 50),
+            
+            div(
+              p(class = "control-label", "Zona"),
+              selectInput("muertes_zona",
+                          NULL,
+                          choices = c("Palestina", "Gaza", "Cisjordania"))
+            )
+          ),
           
           textOutput("texto_muertes_acumuladas", container = comando),
           
@@ -355,12 +428,27 @@ ui <- page_fluid(
         ### mes ----
         
         cuadro_negro(
-          bloque(h3("Muertes por mes"), ancho = "230px"),
+          bloque(h3("Víctimas por mes"), ancho = "230px"),
           
-          radioGroupButtons(
-            inputId = "muertes_totales_mes",
-            label = NULL,
-            choices = c("Asesinados", "Heridos")
+          layout_columns(
+            div(
+              p(class = "control-label", "Variable",
+                style = "margin-bottom: 8px !important;"),
+              
+              radioGroupButtons(
+                inputId = "muertes_totales_mes",
+                label = NULL,
+                choices = c("Asesinados", "Heridos"), 
+                width = "100%"
+              )
+            ),
+            
+            div(
+              p(class = "control-label", "Zona"),
+              selectInput("muertes_mes_zona",
+                          NULL,
+                          choices = c("Palestina", "Gaza", "Cisjordania"))
+            )
           ),
           
           plotOutput("muertes_totales_mes", height = 300) |> withSpinner()
@@ -382,7 +470,7 @@ ui <- page_fluid(
         layout_columns(#fill = TRUE, min_height = 520,
           
           ### distribución edad ----
-          cuadro_negro(alto = "800px",
+          cuadro_negro(alto = "800px", flujo = "scroll",
                        bloque(h3("Víctimas letales por edad"), ancho = "260px"),
                        
                        p("distribución de las víctimas de las Fuerzas de Defensa de Israel y sus aliados"),
@@ -395,7 +483,7 @@ ui <- page_fluid(
                        
                        plotOutput("victimas_edad", height = 330) |> withSpinner(),
                        
-                       comando("> los gráficos de densidad representan la distribución de los datos horizontalmente, donde la altura de la curva representa la cantidad de casos correspondientes a ese punto de la variable horizontal (edad). Vemos que la mayoría de las víctimas son menores de 30 años, pero si desagregamos por edad, se evidencia una diferencia en la edad promedio de las víctimas."),
+                       comando("> los gráficos de densidad distribuyen los casos horizontalmente, donde la altura de la curva representa la cantidad de casos en ese punto de la variable horizontal (edad). La mayoría de las víctimas son menores de 30 años, pero si desagregamos por género, se evidencia una diferencia en la edad promedio."),
           ),
           
           ### nombres ----
@@ -457,6 +545,24 @@ ui <- page_fluid(
         cuadro_negro(
           bloque(h3("Tipo de evento"), ancho = "200px"),
           
+          layout_columns(
+            sliderInput("evento_tipo_año",
+                        "Fecha",
+                        min = 2016, max = 2023,
+                        value = 2019, sep = ""),
+            
+            pickerInput("evento_tipo",
+                        label = "Eventos",
+                        choices = lista_evento,
+                        selected = c("Violencia remota/explosivos",
+                                     "Enfrentamientos",
+                                     "Protestas",
+                                     "Violencia contra civiles"),
+                        multiple = TRUE)
+          ),
+          
+          checkboxInput("evento_tipo_muertes", label = "Mostrar muertes", value = FALSE),
+          
           plotOutput("evento_tipo") |> withSpinner()
           
         ),
@@ -465,28 +571,37 @@ ui <- page_fluid(
         cuadro_negro(
           bloque(h3("Frecuencia de eventos"), ancho = "200px"),
           
+          pickerInput("evento_densidad",
+                      label = "Eventos",
+                      choices = lista_evento,
+                      selected = c("Enfrentamientos",
+                                   "Violencia remota/explosivos",
+                                   "Violencia contra civiles"),
+                      multiple = TRUE, 
+                      options = pickerOptions(maxOptions = 3L,
+                                              maxOptionsText = "Máximo 3")
+          ),
+          
           plotOutput("evento_densidad", height = 480) |> withSpinner()
           
         ),
         
         
-        ### desordenes ----
-        cuadro_negro(
-          h3("Desórdenes"),
-          
-          sliderInput("evento_desorden",
-                      NULL,
-                      min = 2016, max = 2023,
-                      value = 2019, sep = ""),
-          
-          plotOutput("evento_desorden") |> withSpinner()
-          
-        ),
-        
         ### ataques ----
         cuadro_negro(
           h3("Ataques"),
           
+          pickerInput("evento_densidad_ataques",
+                      label = "Subeventos",
+                      choices = lista_subevento,
+                      selected = c("Bombardeo/artillería/misiles",
+                                   "Ataque aéreo/drones",
+                                   "Enfrentamiento armado",
+                                   "Ataques"),
+                      multiple = TRUE, 
+                      options = pickerOptions(maxOptions = 4L,
+                                              maxOptionsText = "Máximo 4")
+          ),
           plotOutput("evento_densidad_ataques", height = 600) |> withSpinner()
         )
         
@@ -558,20 +673,46 @@ ui <- page_fluid(
         
         cuadro_negro(
           
-          div(style = css(width = "320px", margin = "auto", text_align = "center"),
-              sliderTextInput(
-                inputId = "mapa_zoom",
-                label = "Enfocar mapa", 
-                hide_min_max = TRUE,
-                grid = TRUE,
-                force_edges = TRUE,
-                choices = c("Palestina", "Gaza", "Cisjordania")
-              )
+          layout_columns(
+            # div(style = css(width = "320px", margin = "auto", text_align = "center"),
+            sliderTextInput(
+              inputId = "mapa_zoom",
+              label = "Enfocar mapa", 
+              hide_min_max = TRUE,
+              grid = TRUE,
+              force_edges = TRUE,
+              choices = c("Palestina", "Gaza", "Cisjordania")
+            ),
+            pickerInput("mapa_tipo",
+                        label = "Subventos",
+                        choices = lista_subevento,
+                        selected = c("Enfrentamiento armado",
+                                     "Ataque aéreo/drones",
+                                     "Bombardeo/artillería/misiles",
+                                     "Protesta pacífica"),
+                        multiple = TRUE, 
+                        # options = pickerOptions(maxOptions = 3L,
+                        #                         maxOptionsText = "Máximo 3")
+            )
           ),
           
-          textOutput("texto_mapa", container = comando),
+          layout_columns(
+            sliderInput("mapa_año",
+                        "Fecha",
+                        min = 2016, max = 2025,
+                        value = c(2023, 2025), ticks = T,
+                        sep = ""),
+            
+            sliderInput("mapa_muertes", 
+                        "Letalidad", 
+                        min = 0, max = 100, value = 0),
+          ),
           
-          plotOutput("mapa", height = 800) |> withSpinner()
+          checkboxInput("mapa_muertes_size", label = "Mostrar muertes", value = FALSE),
+          
+          plotOutput("mapa", height = 800) |> withSpinner(),
+          
+          textOutput("texto_mapa", container = comando)
         )
       ),
       
@@ -583,7 +724,7 @@ ui <- page_fluid(
       
       hr(),
       
-      ## firma ----
+      ## firma 
       div(style = "padding: 16px; font-size: 90%; margin-top: -30px;",
           
           bloque(h4("Fuentes:"), ancho = "110px"),
@@ -596,13 +737,13 @@ ui <- page_fluid(
           #           - [redacted]"),
           
           div(style = css(margin_top = "26px"),
-          
-          
-          markdown("Desarrollado en R por [Bastián Olea Herrera.](https://bastianolea.rbind.io)"),
-          
-          markdown("Puedes explorar mis otras [aplicaciones interactivas sobre datos sociales en mi portafolio.](https://bastianolea.github.io/shiny_apps/)"),
-          
-          markdown("Los datos y el código de fuente de esta app y de la obtención y procesamiento de los datos están [disponibles en el repositorio de GitHub.](https://github.com/bastianolea/palestina)")
+              
+              
+              markdown("Desarrollado en R por [Bastián Olea Herrera.](https://bastianolea.rbind.io)"),
+              
+              markdown("Puedes explorar mis otras [aplicaciones interactivas sobre datos sociales en mi portafolio.](https://bastianolea.github.io/shiny_apps/)"),
+              
+              markdown("Los datos y el código de fuente de esta app y de la obtención y procesamiento de los datos están [disponibles en el repositorio de GitHub.](https://github.com/bastianolea/palestina)")
           )
       )
   )
@@ -615,27 +756,31 @@ ui <- page_fluid(
 server <- function(input, output) {
   
   # víctimas ----
-  ## muertes totales ----
   
-  muertes_totales <- reactive({
-    muertes |> 
-      group_by(fecha) |> 
-      summarize(muertos = sum(muertos),
-                heridos = sum(heridos),
-                .groups = "drop") |> 
-      mutate(totales = cumsum(muertos))
-    # mutate(alto_prop = if_else(muertos > quantile(muertos, 0.8), "alto", "común"),
-    # alto_rel = if_else(muertos > input$muertes_acumuladas, "alto", "común"))
+  
+  ## víctimas acumuladas ----
+  muertes_acumuladas <- reactive({
+    if (input$muertes_zona == "Palestina") {
+      muertes |> 
+        group_by(fecha) |> 
+        summarize(muertos = sum(muertos),
+                  heridos = sum(heridos),
+                  .groups = "drop") |> 
+        mutate(totales = cumsum(muertos))
+      
+    } else {
+      muertes |> 
+        filter(zona == input$muertes_zona) |> 
+        mutate(totales = cumsum(muertos))
+    }
   })
-  
   
   output$texto_muertes_acumuladas <- renderText({
     paste("> destacando eventos registrados con cantidad de víctimas letales mayor o igual a", input$muertes_acumuladas) 
   })
   
-  ## víctimas acumuladas ----
   output$muertes_acumuladas <- renderPlot({
-    muertes_totales() |> 
+    muertes_acumuladas() |> 
       ggplot() +
       aes(fecha, totales) +
       geom_area(alpha = .5) +
@@ -658,7 +803,12 @@ server <- function(input, output) {
   
   ## muertes por meses ----
   muertes_totales_mes <- reactive({
-    muertes_totales() |> 
+    if (input$muertes_mes_zona != "Palestina") {
+      muertes <- muertes |> 
+        filter(zona == input$muertes_mes_zona)
+    }
+    
+    muertes |> 
       mutate(fecha = floor_date(fecha, "month")) |> 
       group_by(fecha) |> 
       summarize(muertos = sum(muertos),
@@ -668,34 +818,28 @@ server <- function(input, output) {
   
   output$muertes_totales_mes <- renderPlot({
     if (input$muertes_totales_mes == "Asesinados") {
-      
-      muertes_totales_mes() |> 
+      plot <- muertes_totales_mes() |> 
         ggplot() +
-        aes(fecha, muertos) +
-        geom_col(width = 15, alpha = .7) +
-        scale_y_continuous(expand = c(0, 0),
-                           labels = label_comma(big.mark = ".", 
-                                                decimal.mark = ",")) +
-        scale_x_date(date_breaks = "months", date_labels = "%m") +
-        guides(x = guide_axis_nested(key = rango_años)) +
-        labs(y = "muertos por mes", x = "fecha (mes, año)") +
-        tema_palestina +
-        theme(axis.text.x = element_text(margin = margin(t = 4)))
-      
+        aes(fecha, muertos)
+      palabra <- "muertes"
     } else if (input$muertes_totales_mes == "Heridos") {
-      muertes_totales_mes() |> 
+      plot <- muertes_totales_mes() |> 
         ggplot() +
-        aes(fecha, heridos) +
-        geom_col(width = 15, alpha = .7) +
-        scale_y_continuous(expand = c(0, 0),
-                           labels = label_comma(big.mark = ".", 
-                                                decimal.mark = ",")) +
-        scale_x_date(date_breaks = "months", date_labels = "%m") +
-        guides(x = guide_axis_nested(key = rango_años)) +
-        labs(y = "heridos por mes", x = "fecha (mes, año)") +
-        tema_palestina +
-        theme(axis.text.x = element_text(margin = margin(t = 4)))
+        aes(fecha, heridos)
+      palabra <- "heridos"
     }
+    
+    plot +
+      geom_col(width = 15, alpha = .7) +
+      scale_y_continuous(expand = c(0, 0),
+                         labels = label_comma(big.mark = ".", 
+                                              decimal.mark = ",")) +
+      scale_x_date(date_breaks = "months", date_labels = "%m",
+                   expand = expansion(c(0.02, 0.02))) +
+      guides(x = guide_axis_nested(key = rango_años)) +
+      labs(y = paste(palabra, "por mes"), x = "fecha (mes, año)") +
+      tema_palestina +
+      theme(axis.text.x = element_text(margin = margin(t = 4)))
   })
   
   
@@ -759,33 +903,100 @@ server <- function(input, output) {
   
   # eventos ----
   
+  # ## tipo
+  # output$evento_tipo <- renderPlot({
+  #   eventos |>
+  #     filter(tipo_evento %in% input$evento_tipo) |> 
+  #     mutate(muertes = ifelse(muertes > 40, 40, muertes)) |> 
+  #     filter(fecha >= "2023-08-01") |> 
+  #     ggplot() +
+  #     aes(fecha, muertes,
+  #         size = muertes) +
+  #     geom_jitter(aes(color = tipo_evento), 
+  #                 alpha = .1, width = 0, height = .2) +
+  #     guides(color = guide_legend(position = "right")) +
+  #     scale_y_continuous(expand = c(0.02, 0)) +
+  #     scale_x_date(date_breaks = "months", date_labels = "%m",
+  #                  expand = c(0, 0)) +
+  #     guides(x = guide_axis_nested(key = rango_años),
+  #            size = guide_none(),
+  #            color = guide_legend(title = NULL, position = "top", nrow = 2,
+  #                                 override.aes = list(size = 3, alpha = .5))) +
+  #     tema_palestina +
+  #     coord_cartesian(clip = "off") +
+  #     labs(x = "fecha (mes, año)") +
+  #     theme(axis.text.x = element_text(margin = margin(t = 4)),
+  #           panel.grid.minor = element_blank()) +
+  #     theme(legend.text = element_text(margin = margin(l = 1)))
+  # })
+  # 
+  
+  
   ## tipo ----
   output$evento_tipo <- renderPlot({
-    eventos |>
-      filter(fecha >= "2023-08-01",
-             muertes > 0) |> 
+    # browser()
+    
+    # eventos_semana <- eventos |> 
+    #   mutate(tipo_desorden = case_match(tipo_desorden,
+    #                                     "Political violence; Demonstrations" ~ "Demonstrations",
+    #                                     .default = tipo_desorden)) |> 
+    #   mutate(fecha = floor_date(fecha, "month", week_start = 1)) |>
+    #   group_by(año, fecha, tipo_desorden) |>
+    #   summarize(n = n(),
+    #             .groups = "drop")
+    # browser()
+    # dev.new()
+    
+    plot <- eventos_mes |>
+      filter(año >= input$evento_tipo_año) |>
+      filter(tipo_evento %in% input$evento_tipo) |> 
       ggplot() +
-      aes(fecha, muertes,
-          size = muertes) +
-      geom_point(aes(color = tipo_evento), alpha = .2) +
-      guides(color = guide_legend(position = "right")) +
-      scale_y_continuous(expand = c(0, 0)) +
-      scale_x_date(date_breaks = "months", date_labels = "%m",
+      aes(fecha, n, color = tipo_evento)
+    
+    if (input$evento_tipo_muertes) {
+      plot <- plot +
+        geom_line(linewidth = 0.9, alpha = .3) +
+        geom_point(data = ~filter(.x, muertes > 0),
+                   aes(size = muertes),
+                   alpha = .8)
+    } else {
+      plot <- plot +
+        geom_line(linewidth = 0.9, alpha = .8)
+    }
+    
+    plot <- plot +
+      scale_y_continuous(expand = c(0.01, 0.01)) +
+      scale_x_date(date_breaks = "years", date_labels = "%Y",
                    expand = c(0, 0)) +
-      guides(x = guide_axis_nested(key = rango_años),
-             color = guide_legend(override.aes = list(size = 3, alpha = .5))) +
+      scale_size_binned(range = c(.5, 8),
+                        labels = label_comma(big.mark = ".", decimal.mark = ",")) +
       tema_palestina +
       coord_cartesian(clip = "off") +
-      theme(axis.text.x = element_text(margin = margin(t = 4)))
+      guides(color = guide_legend(title = NULL, position = "inside",
+                                  override.aes = list(size = 3, alpha = .7)),
+             size = guide_legend(position = "top")) +
+      theme(legend.position.inside = c(0.2, 0.85)) +
+      labs(y = "cantidad de eventos", x = NULL)
+    
+    if (input$evento_tipo_año >= 2022) {
+      plot <- plot +
+        scale_x_date(date_breaks = "months", date_labels = "%m",
+                     expand = c(0, 0)) +
+        guides(x = guide_axis_nested(key = rango_años)) +
+        theme(axis.text.x = element_text(margin = margin(t = 4)),
+              panel.grid.minor = element_blank())
+    }
+    
+    plot
   })
   
   ## densidad ----
   output$evento_densidad <- renderPlot({
+    # browser()
+    # dev.new()
     eventos |>
       filter(año >= 2023) |> 
-      filter(tipo_evento %in% c("Battles",
-                                "Explosions/Remote violence",
-                                "Violence against civilians")) |> 
+      filter(tipo_evento %in% input$evento_densidad) |> 
       ggplot() +
       aes(fecha, 1) +
       annotate("point", x = ymd("2023-10-07"), y = 1,
@@ -798,40 +1009,13 @@ server <- function(input, output) {
       scale_x_date(date_breaks = "months", date_labels = "%m", 
                    expand = expansion(c(0.01, 0.05))) +
       guides(x = guide_axis_nested(key = rango_años)) +
-      facet_wrap(~tipo_evento, ncol = 1, strip.position = "left") +
+      facet_wrap(~tipo_evento, 
+                 labeller = label_wrap_gen(width = 25, multi_line = TRUE),
+                 ncol = 1, strip.position = "left") +
       tema_palestina +
       theme(axis.text.y = element_blank(),
             axis.title.y = element_blank()) +
       labs(x = "fecha (mes, año)")
-  })
-  
-  ## desorden ----
-  output$evento_desorden <- renderPlot({
-    # browser()
-    
-    # eventos_semana <- eventos |> 
-    #   mutate(tipo_desorden = case_match(tipo_desorden,
-    #                                     "Political violence; Demonstrations" ~ "Demonstrations",
-    #                                     .default = tipo_desorden)) |> 
-    #   mutate(fecha = floor_date(fecha, "month", week_start = 1)) |>
-    #   group_by(año, fecha, tipo_desorden) |>
-    #   summarize(n = n(),
-    #             .groups = "drop")
-    
-    
-    eventos_mes |>
-      filter(año >= input$evento_desorden) |>
-      ggplot() +
-      aes(fecha, n, color = tipo_desorden) +
-      geom_line(linewidth = 0.7, alpha = .8) +
-      scale_y_continuous(expand = c(0.01, 0)) +
-      scale_x_date(date_breaks = "years", date_labels = "%Y",
-                   expand = c(0, 0)) +
-      tema_palestina +
-      guides(color = guide_legend(position = "inside")) +
-      theme(legend.position.inside = c(0.15, 0.8)) +
-      labs(y = "cantidad de eventos", x = NULL,
-           color = "Eventos")
   })
   
   
@@ -839,10 +1023,7 @@ server <- function(input, output) {
   output$evento_densidad_ataques <- renderPlot({
     eventos |>
       filter(año >= 2023) |> 
-      filter(tipo_evento2 %in% c("Air/drone strike",
-                                 "Attack",
-                                 "Armed clash",
-                                 "Shelling/artillery/missile attack")) |> 
+      filter(tipo_subevento %in% input$evento_densidad_ataques) |> 
       ggplot() +
       aes(fecha, 1) +
       annotate("point", x = ymd("2023-10-07"), y = 1,
@@ -856,7 +1037,9 @@ server <- function(input, output) {
                    expand = expansion(c(0, 0.05))) +
       guides(x = guide_axis_nested(key = rango_años),
              y = guide_none(title = NULL)) +
-      facet_wrap(~tipo_evento2, ncol = 1, strip.position = "left") +
+      facet_wrap(~tipo_subevento, 
+                 labeller = label_wrap_gen(width = 25, multi_line = TRUE),
+                 ncol = 1, strip.position = "left") +
       tema_palestina +
       theme(axis.text.y = element_blank(),
             axis.title.y = element_blank()) +
@@ -864,9 +1047,17 @@ server <- function(input, output) {
   })
   
   # mapa ----
-  
   output$texto_mapa <- renderText({
-    paste("> enfocando mapa en:", input$mapa_zoom)
+    paste0("> enfocando mapa en la zona de ", input$mapa_zoom, ", ",
+           "entre los años ", input$mapa_año[1], " y ", input$mapa_año[2], ", ",
+           ifelse(input$mapa_muertes_size,
+                  "donde el tamaño de los puntos indica la cantidad de muertes, ",
+                  ""),
+           ifelse(input$mapa_muertes == 0,
+                  "incluyendo eventos con o sin víctimas letales.",
+                  paste("incluyendo sólo los eventos con más de",
+                        input$mapa_muertes, "víctimas letales."))
+           )
   })
   
   
@@ -879,22 +1070,48 @@ server <- function(input, output) {
   zoom_cisjordania <- list(coord_sf(xlim = c(34.65, 35.8), 
                                     ylim = c(32.6, 31.3)))
   
+  datos_mapa <- reactive({
+    # browser()
+    eventos |> 
+      mutate(año >= input$mapa_año[1],
+             año <= input$mapa_año[2]) |> 
+      filter(muertes >= input$mapa_muertes) |> 
+      filter(tipo_subevento %in% input$mapa_tipo)
+  })
+  
   # generar mapa base
   mapa_base <- reactive({
     
-    ggplot() +
+    plot <- ggplot() +
       annotate("rect", xmin = 32, xmax = 37,
                ymin = 35, ymax = 28, fill = NA) +
       geom_sf(data = mapa,
               aes(fill = admin), 
-              alpha = .2) +
-      geom_sf(data = eventos |> 
-                filter(muertes > 0),
-              aes(color = tipo_evento),
-              alpha = 0.3, size = 1.3) +
-      # zoom_palestina +
+              alpha = .2)
+    
+    if (input$mapa_muertes_size) {
+      plot <- plot +
+        geom_sf(data = datos_mapa(),
+                aes(color = tipo_subevento,
+                    size = muertes),
+                alpha = 0.2)
+    } else {
+      plot <- plot +
+        geom_sf(data = datos_mapa(),
+                aes(color = tipo_subevento),
+                alpha = 0.3, size = 1.3) 
+    }
+    
+    plot <- plot +
+    scale_size_binned(range = c(.5, 25),
+                      breaks = c(0, 20, 60, 100, 300),
+                      limits = c(0, 300),
+                      labels = label_comma(big.mark = ".", decimal.mark = ",")) +
       guides(color = guide_legend(override.aes = list(size = 3, alpha = .5)),
+             size = guide_legend(override.aes = list(color = color$principal)),
              fill = guide_legend(ncol = 2, override.aes = list(height = unit(4, "mm"))))
+    
+    plot
   })
   
   
