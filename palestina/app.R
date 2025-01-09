@@ -28,10 +28,15 @@ eventos_mes <- read_rds("acled_eventos_mes.rds")
 
 mapa <- read_rds("mapa_palestina.rds")
 
-
 # cifras
-nombres <- victimas |> filter(edad < 18) |> pull(nombre) |> sample(300)
 total_victimas <- sum(muertes$muertos)
+# nombres <- victimas |> filter(edad < 18) |> pull(nombre) |> sample(300)
+nombres <- victimas |> 
+  filter(edad < 18) |> 
+  slice_sample(n = 300) |> 
+  mutate(nombre_edad = paste0(nombre, " (", edad, ")")) |> 
+  pull(nombre_edad)
+
 
 # listas
 lista_desorden <- unique(eventos$tipo_desorden)
@@ -54,6 +59,7 @@ lista_subevento <- c("Violencia grupal",
 
 # colores ----
 color <- list(fondo = "#151515",
+              cuadricula = "#252525",
               texto = "#DDDDDD",
               borde = "#BBBBBB",
               detalle = "#353535",
@@ -353,7 +359,7 @@ ui <- page_fluid(
   tags$style(
     HTML("body {
                 background:", color$fondo, ";
-                background-image: radial-gradient(", color$detalle, "1.2px, transparent 0);
+                background-image: radial-gradient(", color$cuadricula, "1.2px, transparent 0);
                 background-size: 18px 18px;
                 }")),
   
@@ -535,7 +541,7 @@ ui <- page_fluid(
                             # animación
                             style = paste0("opacity: 0; font-size: 90%;",
                                            "animation: fade 4s ease forwards;", # controla duración de animación
-                                           "animation-delay: ", .x*0.8, "s;") # controla velocidad de aparición
+                                           "animation-delay: ", .x*1.1, "s;") # controla velocidad de aparición
                        )
                      })
                  )
