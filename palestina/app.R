@@ -59,7 +59,7 @@ lista_subevento <- c("Violencia grupal",
 
 # colores ----
 color <- list(fondo = "#151515",
-              cuadricula = "#252525",
+              cuadricula = "#303030",
               texto = "#DDDDDD",
               borde = "#BBBBBB",
               detalle = "#353535",
@@ -445,9 +445,12 @@ ui <- page_fluid(
         )
       ),
       
+      div(style = css(margin_bottom = "-25px"),
+      hr()
+      ),
+      
       # —----
       
-      hr(), 
       
       # contenido ----
       
@@ -717,7 +720,7 @@ ui <- page_fluid(
                   # ),
                   
                   hr(),
-                  br(),
+                  # br(),
                   
                   ## cruces ----
                   cuadro(
@@ -816,7 +819,7 @@ ui <- page_fluid(
                   
                   hr(),
                   
-                  ## firma 
+                  ## fuentes ----
                   div(style = "padding: 16px; font-size: 90%; margin-top: -30px;",
                       
                       bloque(h4("Fuentes:"), ancho = "110px"),
@@ -828,7 +831,7 @@ ui <- page_fluid(
                       # markdown("- [redacted]
                       #           - [redacted]"),
                       
-                      div(style = css(margin_top = "26px"),
+                      div(style = css(margin_top = "26px", margin_bottom = "26px"),
                           
                           
                           markdown("Desarrollado en R por [Bastián Olea Herrera.](https://bastianolea.rbind.io)"),
