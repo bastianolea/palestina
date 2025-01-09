@@ -98,6 +98,7 @@ readr::write_rds(muertes, "palestina/pdatasets_muertes.rds", compress = "none")
 
 library(dplyr)
 library(sf)
+library(lubridate)
 
 eventos_0 <- readr::read_csv("datos/acled/Israel_Palestine_Dec13.csv")
 
@@ -136,7 +137,7 @@ eventos_2 <- eventos_1 |>
   mutate(tipo_subevento = case_match(tipo_subevento,
                                    "Mob violence" ~ "Violencia grupal",
                                    "Peaceful protest" ~ "Protesta pacífica",
-                                   "Shelling/artillery/missile attack" ~ "Bombardeo/artillería/misiles",
+                                   "Shelling/artillery/missile attack" ~ "Bombardeos o misiles",
                                    "Air/drone strike" ~ "Ataque aéreo/drones",
                                    "Armed clash" ~ "Enfrentamiento armado",
                                    "Other" ~ "Otros",

@@ -28,6 +28,7 @@ eventos_mes <- read_rds("acled_eventos_mes.rds")
 
 mapa <- read_rds("mapa_palestina.rds")
 
+
 # cifras
 nombres <- victimas |> filter(edad < 18) |> pull(nombre) |> sample(300)
 total_victimas <- sum(muertes$muertos)
@@ -146,10 +147,10 @@ bloque <- function(..., ancho = "200px") {
 
 comando <- function(...) {
   div(style = css(padding_left = "1em",
-                  text_indent = "-1em",
-                  line_height = "1.2",
-                  font_size = "85%",
-                  margin_bottom = "22px",
+                  text_indent = "-1.2em",
+                  line_height = "1.3",
+                  font_size = "75%",
+                  margin_bottom = "14px",
                   margin_top = "12px",
                   background_color = color$fondo,
                   # color = color$principal,
@@ -179,16 +180,18 @@ tema_palestina <- theme(text = element_text(family = "Space Grotesk", color = co
         panel.grid.major = element_line(linewidth = 0.4),
         panel.grid.minor = element_line(linewidth = 0.2)) +
   # otros
-  theme(strip.text = element_text(size = 8))
+  theme(strip.text = element_text(size = 10))
 
 # opciones ----
-showtext::showtext_opts(dpi = 180)
-alto_cuadros_victimas = 700
+showtext_auto()
+showtext::showtext_opts(dpi = 190) # tamaño del texto
 options(spinner.type = 1, spinner.color = color$principal)
 
 # ui ----
 
 ui <- page_fluid(
+  title = "Palestina",
+  lang = "es",
   
   ## tema ----
   theme = bslib::bs_theme(fg = color$texto, bg = color$fondo,
@@ -237,6 +240,7 @@ ui <- page_fluid(
   tags$style(
     HTML("hr {
     margin: 0.5rem;
+    margin-top: -0.7rem;
     margin-bottom: 3.3rem;
     color: inherit;
     border: 0;
@@ -379,9 +383,31 @@ ui <- page_fluid(
         bloque(ancho = "170px",
                h1("Palestina")
         ),
-        p("Prueba de texto")
+        
+        div(style = css(opacity = "45%", margin_bottom = "10px"),
+            comando("> desarrollado por", 
+                    a("bastián olea", href = "https://bastianolea.rbind.io",
+                      style = paste("font-family:", tipografia$titulos, "!important;",
+                                    "color:", color$texto, ";"))
+            )
+        ),
+        
+        div(style = css(margin_bottom = "-14px"),
+        p("Visualizador de datos que busca reflejar el horror de la guerra y el exterminio que se están llevando a cabo en el territorio palestino por obra de Israel y sus aliados."),
+        )
+        
       ),
       
+      hr(),
+      
+      div(
+        style = css(margin_top = "-30px",
+                    margin_bottom = "35px"),
+      comando(paste("> datos actualizados:"),
+              "muertes, heridos y nombres de víctimas (Palestine Datasets)", max(muertes$fecha) |> format("%d/%m/%Y"),
+              " / sucesos de violencia política (ACLED)", max(eventos$fecha) |> format("%d/%m/%Y")
+      )
+      ),
       
       # —----
       
@@ -395,13 +421,14 @@ ui <- page_fluid(
                   h2("Víctimas")
         ),
         
-        p("Visualizaciones de datos sobre las víctimas letales de la guerra en territorio palestino."),
+        p("Datos sobre las víctimas letales de la guerra en Palestina."),
         ### acumuladas ----
         
         
         cuadro_negro(
           bloque(h3("Muertes totales acumuladas"), ancho = "230px"),
           
+          p("Esto gráfico de área retrata el conteo total de víctimas acumuladas a través del tiempo. Utiliza el primer selector para destacar los días de mayor cantidad de víctimas, y el segundo selector para filtrar las víctimas letales según la zona en que ocurre la masacre."),
           
           layout_columns(
             sliderInput("muertes_acumuladas", 
@@ -430,6 +457,8 @@ ui <- page_fluid(
         cuadro_negro(
           bloque(h3("Víctimas por mes"), ancho = "230px"),
           
+          p("Esta visualización resume mensualmente la cantidad de víctimas de la guerra. Filtra la visualización entre personas asesinadas o personas heridas, y utiliza el segundo selector para distinguir entre la zona de ocurrencia de los hechos."),
+          
           layout_columns(
             div(
               p(class = "control-label", "Variable",
@@ -452,7 +481,6 @@ ui <- page_fluid(
           ),
           
           plotOutput("muertes_totales_mes", height = 300) |> withSpinner()
-          
         )
         
         
@@ -466,14 +494,15 @@ ui <- page_fluid(
                   h2("Caracterización de víctimas")
         ),
         
+        p("Apartado en el que se intenta caracterizar, con la poca información actualmente existente, a las víctimas letales de la incursión colonialista de Israel en Palestina."),
         
-        layout_columns(#fill = TRUE, min_height = 520,
+        layout_columns(
           
           ### distribución edad ----
           cuadro_negro(alto = "800px", flujo = "scroll",
                        bloque(h3("Víctimas letales por edad"), ancho = "260px"),
                        
-                       p("distribución de las víctimas de las Fuerzas de Defensa de Israel y sus aliados"),
+                       p("Distribución de las víctimas según su edad y género."),
                        
                        radioGroupButtons(
                          inputId = "victimas_edad",
@@ -520,15 +549,13 @@ ui <- page_fluid(
             cuadro_negro(
               bloque(h3("Víctimas letales por género"), ancho = "260px"),
               
-              p("pirámide de población con las edades y géneros de las víctimas"),
+              p("Pirámide de población con las edades y géneros de las víctimas."),
               
               plotOutput("victimas_piramide") |> withSpinner(),
               
               comando("> las pirámides de población permiten analizar rápidamente la distribución poblacional afectada; en este caso, podemos ver una concentración de las víctimas jóvenes y de mediana edad, más sesgada hacia los hombres.")
             )
-        ),
-        
-        
+        )
       ),
       
       
@@ -538,12 +565,18 @@ ui <- page_fluid(
       ## eventos ----
       cuadro(
         subtitulo(ancho = "140px",
-                  h2("Eventos")
+                  h2("Sucesos")
         ),
+        
+        p("En este apartado se presentan visualizaciones de datos que corresponden a eventos de violencia política, protestas, hechos de violencia, y otros eventos políticamente relevantes."),
+        
+        p("Cada evento se refiere a un suceso político puntual, con una fecha y ubicación específicas."),
         
         ### tipo ----
         cuadro_negro(
-          bloque(h3("Tipo de evento"), ancho = "200px"),
+          bloque(h3("Sucesos políticos mensuales"), ancho = "280px"),
+          
+          p("Gráfico de serie de tiempo que indica la cantidad de eventos o sucesos políticos mensuales a través del tiempo. Utiliza el selector de fechas para acotar la fecha de inicio del gráfico, el selector de sucesos para agregar o remover eventos políticos específicos, y el botón cuadrado para indicar en el gráfico la víctimas letales asociadas a cada mes."),
           
           layout_columns(
             sliderInput("evento_tipo_año",
@@ -552,7 +585,7 @@ ui <- page_fluid(
                         value = 2019, sep = ""),
             
             pickerInput("evento_tipo",
-                        label = "Eventos",
+                        label = "Sucesos",
                         choices = lista_evento,
                         selected = c("Violencia remota/explosivos",
                                      "Enfrentamientos",
@@ -563,13 +596,19 @@ ui <- page_fluid(
           
           checkboxInput("evento_tipo_muertes", label = "Mostrar muertes", value = FALSE),
           
-          plotOutput("evento_tipo") |> withSpinner()
+          plotOutput("evento_tipo") |> withSpinner(),
+          
+          comando("> en esta serie de tiempo, cada línea representa un tipo de suceso. La posición de la línea en el eje horizontal identifica el momento en el tiempo, mientras que su posición vertical o altura representa la cantidad de sucesos de su tipo ocurridos en ese momento."),
+          
+          comando("> esta visualización representa el aumento de la violencia ejercida contra el pueblo palestino en distintos momentos del tiempo, así como focos de resistencia ante ella.")
           
         ),
         
         ### densidad ----
         cuadro_negro(
           bloque(h3("Frecuencia de eventos"), ancho = "200px"),
+          
+          p("Gráfico que refleja la frecuencia de ocurrencia de los distintos sucesos a través del tiempo. Las figuras representan la distribución de todos los sucesos políticos y hechos de violencia, engrosándose en las fechas donde estos fueron más frecuentes."),
           
           pickerInput("evento_densidad",
                       label = "Eventos",
@@ -582,14 +621,19 @@ ui <- page_fluid(
                                               maxOptionsText = "Máximo 3")
           ),
           
-          plotOutput("evento_densidad", height = 480) |> withSpinner()
+          plotOutput("evento_densidad", height = 480) |> withSpinner(),
+          
+          comando("> los gráficos de densidad permiten expresar visualmente la distribución de los hechos a través de una variable."),
+          comando("> en este caso, la variable horizontal es el tiempo, por lo que cada figura aumenta o disminuye su tamaño en un momento del tiempo dependiendo de si el suceso que representa fue más o menos frecuente.")
           
         ),
         
         
         ### ataques ----
         cuadro_negro(
-          h3("Ataques"),
+          bloque(h3("Eventos específicos"), ancho = "200px"),
+          
+          p("Los siguientes gráficos, al igual que los del apartado anterior, representan la frecuencia de ocurrencia de sucesos, pero de un mayor grado de especificidad, y particularmente relacionados a violencia política, hechos de guerra, y resistencia."),
           
           pickerInput("evento_densidad_ataques",
                       label = "Subeventos",
@@ -644,12 +688,15 @@ ui <- page_fluid(
         
         p("Cada cruz representa a una de las", 
           format(total_victimas, big.mark = ".", decimal.mark = ","), 
-          "víctimas registradas."),
+          "víctimas palestinas registradas al momento, a partir del 7 de octubre de 2023. Esta cifra no representa la cantidad total de víctimas, debido a que la escala de la violencia es tal que la tarea de registrar e identificar cuerpos se dificulta."),
         
         p(em("Desplázate hacia abajo para comprender la gravedad de la cifra.")),
         
-        div(style = css(height = paste0(alto_cuadros_victimas, "px"),
+        div(style = css(height = "500px",
                         margin_left = "12px",
+                        margin_top = "18px",
+                        margin_bottom = "18px",
+                        line_height = "1.3em",
                         font_size = "135%",
                         letter_spacing = "5px",
                         overflow_y = "scroll",
@@ -671,7 +718,13 @@ ui <- page_fluid(
                   h2("Mapas")
         ),
         
+        p("Mapa interactivo de todos los eventos georeferenciados con relación al conflicto entre Israel y Palestina."),
+        
         cuadro_negro(
+          
+          p("Utiliza los siguientes controles para explorar la distribución espacial de los hechos de violencia, enfrentamientos, protestas, y ataques ocurridos en el territorio palestino."),
+          
+          p("Los controles permiten enfocar el mapa en toda Palestina, en la franja de Gaza o en Cisjordania, filtrar el tipo de evento que se visualiza en el mapa, filtrar los sucesos según su ocurrencia en el tiempo, y finalmente filtrar cada punto del mapa según la cantidad de víctimas letales de cada suceso, opcionalmente pudiendo hacer que el tamaño de los puntos dependa de la letalidad de los hechos."),
           
           layout_columns(
             # div(style = css(width = "320px", margin = "auto", text_align = "center"),
@@ -683,6 +736,7 @@ ui <- page_fluid(
               force_edges = TRUE,
               choices = c("Palestina", "Gaza", "Cisjordania")
             ),
+            
             pickerInput("mapa_tipo",
                         label = "Subventos",
                         choices = lista_subevento,
@@ -710,17 +764,14 @@ ui <- page_fluid(
           
           checkboxInput("mapa_muertes_size", label = "Mostrar muertes", value = FALSE),
           
-          plotOutput("mapa", height = 800) |> withSpinner(),
+          div(style = css(min_width = "600px"),
+          plotOutput("mapa", height = 800) |> withSpinner()
+          ),
           
           textOutput("texto_mapa", container = comando)
         )
       ),
-      
-      
-      
-      
-      # ), # fin columnas víctimas
-      
+
       
       hr(),
       
@@ -743,7 +794,7 @@ ui <- page_fluid(
               
               markdown("Puedes explorar mis otras [aplicaciones interactivas sobre datos sociales en mi portafolio.](https://bastianolea.github.io/shiny_apps/)"),
               
-              markdown("Los datos y el código de fuente de esta app y de la obtención y procesamiento de los datos están [disponibles en el repositorio de GitHub.](https://github.com/bastianolea/palestina)")
+              markdown("Los datos, el código de fuente de esta app, y el código de la obtención y procesamiento de los datos están [disponibles en el repositorio de GitHub.](https://github.com/bastianolea/palestina)")
           )
       )
   )
@@ -853,6 +904,7 @@ server <- function(input, output) {
       victimas |> 
         ggplot(aes(edad)) +
         geom_density(fill = color$principal, alpha = .4) +
+        geom_vline(xintercept = 18, color = "red3", linewidth = .7, alpha = .7) +
         scale_y_continuous(expand = expansion(c(0, 0.03))) +
         scale_x_continuous(expand = expansion(c(0, 0.02))) +
         theme(axis.text.y = element_blank()) +
@@ -864,6 +916,7 @@ server <- function(input, output) {
         ggplot() +
         aes(edad, fill = sexo, color = sexo) +
         geom_density(alpha = .5) +
+        geom_vline(xintercept = 18, color = "red3", linewidth = .7, alpha = .7) +
         scale_y_continuous(expand = expansion(c(0, 0.03))) +
         scale_x_continuous(expand = expansion(c(0, 0.04))) +
         theme(axis.text.y = element_blank()) +
@@ -1047,6 +1100,8 @@ server <- function(input, output) {
   })
   
   # mapa ----
+  
+  # texto inferior del mapa
   output$texto_mapa <- renderText({
     paste0("> enfocando mapa en la zona de ", input$mapa_zoom, ", ",
            "entre los años ", input$mapa_año[1], " y ", input$mapa_año[2], ", ",
@@ -1060,7 +1115,7 @@ server <- function(input, output) {
            )
   })
   
-  
+  # definición de los acercamientos al territorio
   zoom_palestina <- list(coord_sf(xlim = c(34, 36), 
                                   ylim = c(33.3, 29.5)))
   
@@ -1070,6 +1125,7 @@ server <- function(input, output) {
   zoom_cisjordania <- list(coord_sf(xlim = c(34.65, 35.8), 
                                     ylim = c(32.6, 31.3)))
   
+  # filtrado de datos del mapa
   datos_mapa <- reactive({
     # browser()
     eventos |> 
@@ -1082,6 +1138,7 @@ server <- function(input, output) {
   # generar mapa base
   mapa_base <- reactive({
     
+    # mapa base
     plot <- ggplot() +
       annotate("rect", xmin = 32, xmax = 37,
                ymin = 35, ymax = 28, fill = NA) +
@@ -1089,6 +1146,7 @@ server <- function(input, output) {
               aes(fill = admin), 
               alpha = .2)
     
+    # tamaño según muertes
     if (input$mapa_muertes_size) {
       plot <- plot +
         geom_sf(data = datos_mapa(),
@@ -1102,6 +1160,7 @@ server <- function(input, output) {
                 alpha = 0.3, size = 1.3) 
     }
     
+    # escalas
     plot <- plot +
     scale_size_binned(range = c(.5, 25),
                       breaks = c(0, 20, 60, 100, 300),
@@ -1113,7 +1172,6 @@ server <- function(input, output) {
     
     plot
   })
-  
   
   # acercar mapa
   output$mapa <- renderPlot({
