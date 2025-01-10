@@ -198,15 +198,21 @@ tema_palestina <- theme(text = element_text(family = "Space Grotesk", color = co
   # grilla
   theme(panel.grid = element_line(color = color$detalle,
                                   linetype = "dotted"),
-        panel.grid.major = element_line(linewidth = 0.4),
+        panel.grid.major = element_line(linewidth = 0.3),
         panel.grid.minor = element_line(linewidth = 0.2)) +
-  # otros
-  theme(strip.text = element_text(size = 10))
+  # texto
+  theme(strip.text = element_text(size = 10),
+        axis.title = element_text(size = 8),
+        axis.text = element_text(size = 6))
 
 # opciones ----
-#showtext_auto()
-#showtext::showtext_opts(dpi = 190) # tamaño del texto
 options(spinner.type = 1, spinner.color = color$principal)
+library(ragg)
+options(shiny.useragg = TRUE)
+# showtext_auto()
+# showtext::showtext_opts(dpi = 180) # tamaño del texto
+resolucion = 130
+
 
 # ui ----
 
@@ -545,7 +551,7 @@ ui <- page_fluid(
                     layout_columns(
                       
                       ### distribución edad ----
-                      cuadro_negro(alto = "800px", flujo = "hidden",
+                      cuadro_negro(alto = "800px", flujo = "scroll",
                                    bloque(h3("Víctimas letales por edad"), ancho = "260px"),
                                    
                                    p("Distribución de las víctimas según su edad y género."),
@@ -581,7 +587,7 @@ ui <- page_fluid(
                                         # animación
                                         style = paste0("opacity: 0; font-size: 90%;",
                                                        "animation: fade 4s ease forwards;", # controla duración de animación
-                                                       "animation-delay: ", .x*0.05, "s;") # controla velocidad de aparición
+                                                       "animation-delay: ", .x*1.1, "s;") # controla velocidad de aparición
                                    )
                                  })
                              )
@@ -988,7 +994,7 @@ server <- function(input, output) {
       scale_x_date(date_breaks = "months", date_labels = "%m") +
       guides(x = guide_axis_nested(key = rango_años)) +
       tema_palestina
-  })
+  }, res = resolucion)
   
   
   
@@ -1031,7 +1037,7 @@ server <- function(input, output) {
       labs(y = paste(palabra, "por mes"), x = "fecha (mes, año)") +
       tema_palestina +
       theme(axis.text.x = element_text(margin = margin(t = 4)))
-  })
+  }, res = resolucion)
   
   
   
@@ -1069,7 +1075,9 @@ server <- function(input, output) {
               legend.key.spacing.y = unit(2, "mm")) +
         tema_palestina
     }
-  })
+  }, res = resolucion)
+  
+  
   
   ## víctimas por género pirámide ----
   
@@ -1089,8 +1097,10 @@ server <- function(input, output) {
       labs(x = "víctimas por edad y género") +
       tema_palestina +
       theme(legend.position = "top",
-            legend.title = element_blank())
-  })
+            legend.title = element_blank(),
+            legend.key.height = unit(4, "mm"),
+            legend.text = element_text(margin = margin(l = 4, r = 6)))
+  }, res = resolucion)
   
   
   
@@ -1148,13 +1158,13 @@ server <- function(input, output) {
     
     if (input$evento_tipo_muertes) {
       plot <- plot +
-        geom_line(linewidth = 0.9, alpha = .3) +
+        geom_line(linewidth = 0.7, alpha = .3) +
         geom_point(data = ~filter(.x, muertes > 0),
                    aes(size = muertes),
                    alpha = .8)
     } else {
       plot <- plot +
-        geom_line(linewidth = 0.9, alpha = .8)
+        geom_line(linewidth = 0.7, alpha = .8)
     }
     
     plot <- plot +
@@ -1181,7 +1191,7 @@ server <- function(input, output) {
     }
     
     plot
-  })
+  }, res = resolucion)
   
   ## densidad ----
   output$evento_densidad <- renderPlot({
@@ -1208,7 +1218,7 @@ server <- function(input, output) {
             axis.title.y = element_blank(),
             strip.text = element_text(size = 7)) +
       labs(x = "fecha (mes, año)")
-  })
+  }, res = resolucion)
   
   
   ## ataques ----
@@ -1235,7 +1245,7 @@ server <- function(input, output) {
             axis.title.y = element_blank(),
             strip.text = element_text(size = 7)) +
       labs(x = "fecha (mes, año)")
-  })
+  }, res = resolucion)
   
   # mapa ----
   
@@ -1330,11 +1340,12 @@ server <- function(input, output) {
                                    "Israel" = "grey30"), 
                         na.value = NA) +
       tema_palestina +
-      theme(legend.key.height = unit(6, "mm"),
-            legend.key.spacing.y = unit(0, "mm")) +
+      theme(legend.key.height = unit(4, "mm"),
+            legend.key.spacing.y = unit(0, "mm"),
+            axis.text = element_text(color = color$detalle, size = 8)) +
       labs(fill = "Territorio",
            color = "Evento")
-  })
+  }, res = resolucion)
 }
 
 shinyApp(ui = ui, server = server)
