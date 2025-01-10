@@ -175,10 +175,10 @@ salto <- function() {
 
 enlaces <- function(titulo, enlace, texto = NULL, ...) {
   div(style = css(...),
-    a(style = css(color = color$texto),
-    h3(titulo),
-    href = enlace),
-  if (!is.null(texto)) p(texto) 
+      a(style = css(color = color$texto),
+        h3(titulo),
+        href = enlace),
+      if (!is.null(texto)) p(texto) 
   )
 }
 
@@ -446,7 +446,7 @@ ui <- page_fluid(
       ),
       
       div(style = css(margin_bottom = "-25px"),
-      hr()
+          hr()
       ),
       
       # —----
@@ -853,33 +853,33 @@ ui <- page_fluid(
                     ),
                     
                     
-                  p("Campañas de donación verificadas para apoyar directamente a víctimas de la guerra en Palestina."),
-                  
-                  br(),
-                  
-                  div(style = css(color = color$texto),
-                    a(style = css(color = color$texto),
-                      h3("Ayuda a un estudiante de medicina y su familia atrapados en Gaza"), 
-                      href = "https://www.gofundme.com/f/help-amedical-student-stuck-in-gaza"),
-                    p("Campaña en apoyo a Anas Ayesh, estudiante de medicina palestino, quien luego de estudiar fuera de su país, regresó a Gaza a visitar a su familia pero se vio atrapado ahí por la guerra, viendo sus estudios interrumpidos."),
+                    p("Campañas de donación verificadas para apoyar directamente a víctimas de la guerra en Palestina."),
                     
-                    salto(),
+                    br(),
                     
-                    a(style = css(color = color$texto),
-                      h3("Ayuda a una familia a escapar del flagelo de la guerra en Gaza"),
-                      href = "https://www.gofundme.com/f/your-donation-help-us-get-out-of-gaza?attribution_id=sl:7694aad2-d014-41ee-a0b1-40c3c9984bc1&utm_campaign=fp_sharesheet&utm_medium=customer&utm_source=copy_link"),
-                    p("Campaña en apoyo a Fadwa Hussein (32) y su esposo Ahmed Al-Kurd (38), padres de 4 hijxs de entre 2 y 11 años, para sobrevivir en Gaza y eventualmente huir a un lugar seguro."),
-                    
-                    salto(),
-                    
-                    
-                    a(style = css(color = color$texto),
-                      h3("Apoya a Mohammed Imar, refugiado que evacuó a Egipto, pero cuya familia sigue en Gaza"),
-                      href = "https://www.instagram.com/mohammed_n_imad?__pwa=1"),
-                    p("Mohammed también imparte clases de árabe-español."),
-                    
-                    br()
-                  )
+                    div(style = css(color = color$texto),
+                        a(style = css(color = color$texto),
+                          h3("Ayuda a un estudiante de medicina y su familia atrapados en Gaza"), 
+                          href = "https://www.gofundme.com/f/help-amedical-student-stuck-in-gaza"),
+                        p("Campaña en apoyo a Anas Ayesh, estudiante de medicina palestino, quien luego de estudiar fuera de su país, regresó a Gaza a visitar a su familia pero se vio atrapado ahí por la guerra, viendo sus estudios interrumpidos."),
+                        
+                        salto(),
+                        
+                        a(style = css(color = color$texto),
+                          h3("Ayuda a una familia a escapar del flagelo de la guerra en Gaza"),
+                          href = "https://www.gofundme.com/f/your-donation-help-us-get-out-of-gaza?attribution_id=sl:7694aad2-d014-41ee-a0b1-40c3c9984bc1&utm_campaign=fp_sharesheet&utm_medium=customer&utm_source=copy_link"),
+                        p("Campaña en apoyo a Fadwa Hussein (32) y su esposo Ahmed Al-Kurd (38), padres de 4 hijxs de entre 2 y 11 años, para sobrevivir en Gaza y eventualmente huir a un lugar seguro."),
+                        
+                        salto(),
+                        
+                        
+                        a(style = css(color = color$texto),
+                          h3("Apoya a Mohammed Imar, refugiado que evacuó a Egipto, pero cuya familia sigue en Gaza"),
+                          href = "https://www.instagram.com/mohammed_n_imad?__pwa=1"),
+                        p("Mohammed también imparte clases de árabe-español."),
+                        
+                        br()
+                    )
                   )
                   
         ),
@@ -898,34 +898,34 @@ ui <- page_fluid(
                     
                     br(),
                     
-                  enlaces("Boicot a empresas internacionales que apoyan a Israel",
-                          "https://bdsmovement.net/Act-Now-Against-These-Companies-Profiting-From-Genocide",
-                         "Boicot a empresas que apoyan a Israel"
-                  ),
-                  
-                  salto(),
-                  
-                  enlaces("Boicot a empresas en Chile que apoyan a Israel",
-                  "https://www.instagram.com/bdschile/?hl=es"),
-                  
-                  salto(),
-                  
-                  
-                  enlaces("Mapas: selección de mapas y noticias sobre ataques en Gaza",
-                  "https://www.nytimes.com/interactive/2023/10/07/world/middleeast/israel-gaza-maps.html",
-                  "New York Times"),
-                  
-                  salto(),
-                  
-                  enlaces("Mapas: la destrucción de Gaza",
-                  "https://www.reuters.com/graphics/ISRAEL-PALESTINIANS/MAPS/zjvqedgdjvx/",
-                  "Reuters"),
-                  
-                  salto(),
-                  
-                  enlaces("Datos y gráficos: Israel y Palestina",
-                  "https://acleddata.com/israel-palestine/",
-                  "Armed Conflict Location and Event Data Project (ACLED)")
+                    enlaces("Boicot a empresas internacionales que apoyan a Israel",
+                            "https://bdsmovement.net/Act-Now-Against-These-Companies-Profiting-From-Genocide",
+                            "Boicot a empresas que apoyan a Israel"
+                    ),
+                    
+                    salto(),
+                    
+                    enlaces("Boicot a empresas en Chile que apoyan a Israel",
+                            "https://www.instagram.com/bdschile/?hl=es"),
+                    
+                    salto(),
+                    
+                    
+                    enlaces("Mapas: selección de mapas y noticias sobre ataques en Gaza",
+                            "https://www.nytimes.com/interactive/2023/10/07/world/middleeast/israel-gaza-maps.html",
+                            "New York Times"),
+                    
+                    salto(),
+                    
+                    enlaces("Mapas: la destrucción de Gaza",
+                            "https://www.reuters.com/graphics/ISRAEL-PALESTINIANS/MAPS/zjvqedgdjvx/",
+                            "Reuters"),
+                    
+                    salto(),
+                    
+                    enlaces("Datos y gráficos: Israel y Palestina",
+                            "https://acleddata.com/israel-palestine/",
+                            "Armed Conflict Location and Event Data Project (ACLED)")
                   )
         )
         
