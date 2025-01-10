@@ -435,7 +435,7 @@ ui <- page_fluid(
         ),
         
         div(style = css(margin_bottom = "-14px"),
-            p("Visualizador de datos que busca reflejar el horror de la guerra y el exterminio que se están llevando a cabo en el territorio palestino por obra de Israel y sus aliados."),
+            p("Visualizador de datos que busca reflejar el horror del genocidio que se está llevando a cabo en el territorio palestino por obra de Israel y sus aliados."),
         )
         
       ),
@@ -471,7 +471,7 @@ ui <- page_fluid(
                               h2("Víctimas")
                     ),
                     
-                    p("Datos sobre las víctimas letales de la guerra en Palestina."),
+                    p("Datos sobre las víctimas letales del conflicto en Palestina."),
                     ### acumuladas ----
                     
                     
@@ -509,7 +509,7 @@ ui <- page_fluid(
                       flujo = "hidden",
                       bloque(h3("Víctimas por mes"), ancho = "230px"),
                       
-                      p("Esta visualización resume mensualmente la cantidad de víctimas de la guerra. Filtra la visualización entre personas asesinadas o personas heridas, y utiliza el segundo selector para distinguir entre la zona de ocurrencia de los hechos."),
+                      p("Esta visualización resume mensualmente la cantidad de víctimas del conflicto. Filtra la visualización entre personas asesinadas o personas heridas, y utiliza el segundo selector para distinguir entre la zona de ocurrencia de los hechos."),
                       
                       layout_columns(
                         div(
@@ -572,7 +572,7 @@ ui <- page_fluid(
                       cuadro(alto = "800px", flujo = "hidden",
                              bloque(h3("Víctimas menores de edad"), ancho = "230px"),
                              
-                             p(em("Cada nombre corresponde a una víctima confirmada de la guerra con menos de 18 años a la fecha de su muerte.")),
+                             p(em("Cada nombre corresponde a una víctima confirmada con menos de 18 años a la fecha de su muerte.")),
                              
                              p(em("Los nombres son elegidos al azar de entre las decenas de miles de víctimas registradas.")),
                              
@@ -865,7 +865,7 @@ ui <- page_fluid(
                     ),
                     
                     
-                    p("Campañas de donación verificadas para apoyar directamente a víctimas de la guerra en Palestina."),
+                    p("Campañas de donación verificadas para apoyar directamente a víctimas del genocidio en Palestina."),
                     
                     br(),
                     
