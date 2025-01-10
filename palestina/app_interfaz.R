@@ -46,9 +46,12 @@ ui <- page_fluid(
   
   # tema ----
   theme = bslib::bs_theme(fg = color$texto, bg = color$fondo,
-                          primary = color$principal,
+                          primary = color$principal ,
                           heading_font = font_google(tipografia$titulos),
                           base_font = font_google(tipografia$cuerpo),
+                          "font-size-base" = "1rem",  # Ajustar el tamaño base de la fuente
+                          "font-size-lg" = "1rem",  # Ajustar el tamaño de la fuente grande
+                          "font-size-sm" = "0.875rem"  # Ajustar el tamaño de la fuente pequeña
   ),
   
   # estilos ----
