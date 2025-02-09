@@ -55,8 +55,6 @@ lista_subevento <- c("Violencia grupal",
                      "Detenciones")
 
 
-
-
 # colores ----
 color <- list(fondo = "#151515",
               cuadricula = "#303030",
@@ -67,7 +65,6 @@ color <- list(fondo = "#151515",
 )
 
 thematic_shiny(font = "auto")
-
 
 # tipografías ----
 tipografia <- list(titulos = "JetBrains Mono",
