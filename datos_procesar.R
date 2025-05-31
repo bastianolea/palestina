@@ -145,11 +145,23 @@ eventos_2 <- eventos_1 |>
                                    "Looting/property destruction" ~ "Saqueos/destrucción de propiedad",
                                    "Attack" ~ "Ataques",
                                    "Violent demonstration" ~ "Protesta violenta",
+                                   "Protest with intervention" ~ "Protesta con intervención",
                                    "Disrupted weapons use" ~ "Denegación de uso de armas",
                                    "Remote explosive/landmine/IED" ~ "Explosivo remoto/minas",
                                    "Arrests" ~ "Detenciones",
-                                   .default = tipo_subevento))
+                                   "Grenade" ~ "Granadas",
+                                   # .default = tipo_subevento
+                                   .default = "Otros"
+                                   ))
 
+# eventos_2 |> 
+#   count(tipo_subevento, sort = T) |> 
+#   print(n=Inf)
+
+eventos_2 |>
+  count(tipo_subevento, sort = T) |>
+  pull(tipo_subevento) |> 
+  cat(sep = "\n")
 
 
 eventos_3 <- eventos_2 |>

@@ -43,16 +43,20 @@ lista_desorden <- unique(eventos$tipo_desorden)
 lista_evento <- unique(eventos$tipo_evento)
 # lista_subevento <- unique(eventos$tipo_subevento)[1:13]
 lista_subevento <- c("Violencia grupal",
+                     "Bombardeos o misiles",
                      "Protesta pacífica",
-                     "Bombardeo/artillería/misiles",
                      "Ataque aéreo/drones",
-                     "Enfrentamiento armado",
+                     "Otros",
                      "Saqueos/destrucción de propiedad",
+                     "Enfrentamiento armado",
                      "Ataques",
                      "Protesta violenta",
                      "Denegación de uso de armas",
+                     "Protesta con intervención",
                      "Explosivo remoto/minas",
-                     "Detenciones")
+                     "Detenciones",
+                     "Granadas")
+
 
 
 # colores ----
@@ -681,7 +685,7 @@ ui <- page_fluid(
                     ),
                     
                     
-                    ### ataques ----
+                    ### eventos específicos ----
                     cuadro_negro(
                       flujo = "hidden",
                       bloque(h3("Eventos específicos"), ancho = "200px"),
@@ -691,11 +695,11 @@ ui <- page_fluid(
                       pickerInput("evento_densidad_ataques",
                                   label = "Subeventos",
                                   choices = lista_subevento,
-                                  selected = c("Bombardeo/artillería/misiles",
+                                  selected = c("Bombardeos o misiles",
                                                "Ataque aéreo/drones",
                                                "Enfrentamiento armado",
-                                               "Ataques"),
-                                  multiple = TRUE, 
+                                               "Explosivo remoto/minas"),
+                                  multiple = TRUE, width = "100%",
                                   options = pickerOptions(maxOptions = 4L,
                                                           maxOptionsText = "Máximo 4")
                       ),
@@ -1220,6 +1224,7 @@ server <- function(input, output) {
   
   ## ataques ----
   output$evento_densidad_ataques <- renderPlot({
+    # browser()
     eventos |>
       filter(año >= 2023) |> 
       filter(tipo_subevento %in% input$evento_densidad_ataques) |> 

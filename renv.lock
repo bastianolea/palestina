@@ -4,7 +4,7 @@
     "Repositories": [
       {
         "Name": "CRAN",
-        "URL": "https://packagemanager.posit.co/cran/latest"
+        "URL": "https://cran.rstudio.com"
       }
     ]
   },
@@ -870,6 +870,17 @@
       ],
       "Hash": "1cba04a4e9414bdefc9dcaa99649a8dc"
     },
+    "ragg": {
+      "Package": "ragg",
+      "Version": "1.4.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "systemfonts",
+        "textshaping"
+      ],
+      "Hash": "1591adde9ce8ff7de58072e4a32b66ce"
+    },
     "rappdirs": {
       "Package": "rappdirs",
       "Version": "0.3.3",
@@ -1137,6 +1148,19 @@
       ],
       "Hash": "5f5a7629f956619d519205ec475fe647"
     },
+    "stringi": {
+      "Package": "stringi",
+      "Version": "1.8.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "stats",
+        "tools",
+        "utils"
+      ],
+      "Hash": "2b56088e23bdd58f89aebf43a0913457"
+    },
     "sys": {
       "Package": "sys",
       "Version": "3.4.3",
@@ -1151,6 +1175,23 @@
       "Repository": "CRAN",
       "Hash": "7dfca1e9c5c278300b5ca6a1772072f7"
     },
+    "systemfonts": {
+      "Package": "systemfonts",
+      "Version": "1.2.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "base64enc",
+        "cpp11",
+        "grid",
+        "jsonlite",
+        "lifecycle",
+        "tools",
+        "utils"
+      ],
+      "Hash": "fe31683d2c6fd9a5724bcdf8ed44ded9"
+    },
     "terra": {
       "Package": "terra",
       "Version": "1.7-78",
@@ -1162,6 +1203,22 @@
         "methods"
       ],
       "Hash": "8f020def0792119cb98bd8f696dab22d"
+    },
+    "textshaping": {
+      "Package": "textshaping",
+      "Version": "1.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cpp11",
+        "lifecycle",
+        "stats",
+        "stringi",
+        "systemfonts",
+        "utils"
+      ],
+      "Hash": "75b5813527f4154cb467e4cf60911333"
     },
     "thematic": {
       "Package": "thematic",
