@@ -100,7 +100,8 @@ library(dplyr)
 library(sf)
 library(lubridate)
 
-eventos_0 <- readr::read_csv("datos/acled/Israel_Palestine_Dec13.csv")
+# eventos_0 <- readr::read_csv("datos/acled/Israel_Palestine_Dec13.csv")
+eventos_0 <- readr::read_csv("datos/acled/Israel_Palestine_May23.csv")
 
 eventos_1 <- eventos_0 |> 
   select(fecha = event_date,

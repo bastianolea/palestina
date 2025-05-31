@@ -8,6 +8,9 @@
 - Palestine Datasets: https://data.techforpalestine.org/docs/killed-in-gaza/
 - Armed Conflict Location & Event Data (ACLED): https://acleddata.com/israel-palestine/
 
+## Actualizaciones 
+- **31/05/2025:** datos actualizados: muertes, heridos y nombres de víctimas (Palestine Datasets) 31/05/2025 / sucesos de violencia política (ACLED) 23/05/2025
+
 ----
 
 ## Agradecimientos
