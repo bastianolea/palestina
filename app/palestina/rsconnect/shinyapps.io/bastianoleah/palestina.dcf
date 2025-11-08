@@ -1,0 +1,12 @@
+name: palestina
+title: palestina
+username: bastianoleah
+account: bastianoleah
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13678905
+bundleId: 11150017
+url: https://bastianoleah.shinyapps.io/palestina/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

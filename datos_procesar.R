@@ -33,7 +33,7 @@ victimas <- victimas_0 |>
 
 
 # guardar
-readr::write_rds(victimas, "palestina/pdatasets_victimas.rds", compress = "none")
+readr::write_rds(victimas, "app/palestina/pdatasets_victimas.rds", compress = "none")
 
 
 ## diarios gaza ----
@@ -82,7 +82,7 @@ muertes <- bind_rows(gaza_diarios,
 muertes
 
 # guardar
-readr::write_rds(muertes, "palestina/pdatasets_muertes.rds", compress = "none")
+readr::write_rds(muertes, "app/palestina/pdatasets_muertes.rds", compress = "none")
 
 # acled ----
 # https://acleddata.com/israel-palestine/
@@ -177,5 +177,5 @@ eventos_mes <- eventos_2 |>
             .groups = "drop")
 
 # guardar
-readr::write_rds(eventos_3, "palestina/acled_eventos.rds", compress = "none")
-readr::write_rds(eventos_mes, "palestina/acled_eventos_mes.rds", compress = "none")
+readr::write_rds(eventos_3, "app/palestina/acled_eventos.rds", compress = "none")
+readr::write_rds(eventos_mes, "app/palestina/acled_eventos_mes.rds", compress = "none")

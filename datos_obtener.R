@@ -15,3 +15,6 @@ download.file("https://data.techforpalestine.org/api/v2/casualties_daily.csv",
 download.file("https://data.techforpalestine.org/api/v2/west_bank_daily.csv",
               "datos/palestine-datasets/west_bank_daily.csv")
 
+
+# acled (conflictos): descarga manual
+# https://acleddata.com/israel-palestine/
